@@ -1,0 +1,1844 @@
+[
+    {
+        "question_id": 205,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT T.molecule_id FROM atom AS T WHERE T.element = 'c'",
+        "Generated SQL": "SELECT molecule_id\nFROM molecule\nWHERE molecule_id IN (\n  SELECT molecule_id\n  FROM atom\n  WHERE element = 'C'\n)"
+    },
+    {
+        "question_id": 52,
+        "db_id": "california_schools",
+        "Original SQL": "SELECT COUNT(T1.cds) FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.MailCity = 'Lakeport' AND (T1.AvgScrRead + T1.AvgScrMath + T1.AvgScrWrite) >= 1500",
+        "Generated SQL": "SELECT COUNT(*) FROM schools\nWHERE MailCity = 'Lakeport' AND NumGE1500 > 0"
+    },
+    {
+        "question_id": 1374,
+        "db_id": "student_club",
+        "Original SQL": "SELECT COUNT(T2.link_to_event) FROM member AS T1 INNER JOIN attendance AS T2 ON T1.member_id = T2.link_to_member WHERE T1.phone = '954-555-6240'",
+        "Generated SQL": "SELECT COUNT(*) FROM event JOIN attendance ON event.event_id = attendance.link_to_event JOIN member ON member.member_id = attendance.link_to_member WHERE member.phone = \"954-555-6240\""
+    },
+    {
+        "question_id": 1194,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT T1.SEX FROM Patient AS T1 INNER JOIN Examination AS T2 ON T1.ID = T2.ID INNER JOIN Laboratory AS T3 ON T3.ID = T2.ID WHERE T2.Diagnosis = 'PSS' AND T3.CRP = '2+' AND T3.CRE = 1.0 AND T3.LDH = 123",
+        "Generated SQL": "SELECT SEX FROM Patient WHERE ID IN (SELECT ID FROM Examination WHERE Diagnosis = 'PSS') AND ID IN (SELECT ID FROM Laboratory WHERE CRP = '2+' AND CRE = '123' AND LDH = '123')"
+    },
+    {
+        "question_id": 421,
+        "db_id": "card_games",
+        "Original SQL": "SELECT name FROM cards WHERE (power IS NULL OR power LIKE '%*%') AND promoTypes = 'arenaleague' ORDER BY name LIMIT 3",
+        "Generated SQL": "SELECT name FROM cards\nWHERE power IS NOT NULL\nAND (\n    SELECT COUNT(*) FROM legalities\n    WHERE legalities.uuid = cards.uuid\n    AND legalities.format = 'arena'\n    AND legalities.status = 'legal'\n) > 0\nORDER BY name ASC\nLIMIT 3"
+    },
+    {
+        "question_id": 699,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT CreationDate FROM users WHERE DisplayName = 'IrishStat'",
+        "Generated SQL": "SELECT * FROM users\nWHERE DisplayName = 'IrishStat'\nORDER BY CreationDate ASC\nLIMIT 1"
+    },
+    {
+        "question_id": 939,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT COUNT(*) FROM drivers AS T1 INNER JOIN results AS T2 ON T1.driverId = T2.driverId INNER JOIN races AS T3 ON T3.raceId = T2.raceId WHERE T3.name = 'Australian Grand Prix' AND T1.nationality = 'British' AND T3.year = 2008",
+        "Generated SQL": "SELECT COUNT(DISTINCT driverId)\nFROM drivers\nWHERE nationality = 'Australia'"
+    },
+    {
+        "question_id": 919,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT T1.name FROM circuits AS T1 INNER JOIN races AS T2 ON T2.circuitID = T1.circuitId WHERE T2.year = 2009 AND T2.name = 'Spanish Grand Prix'",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 273,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT CAST(COUNT( CASE WHEN T1.element = 'cl' THEN T1.element ELSE NULL END) AS REAL) * 100 / COUNT(T1.element) FROM atom AS T1 INNER JOIN molecule AS T2 ON T1.molecule_id = T2.molecule_id WHERE T2.label = '+'",
+        "Generated SQL": "SELECT\n  COUNT(*) / (SELECT COUNT(*) FROM molecule)\nFROM\n  atom\nWHERE\n  element = 'Cl'\n  AND molecule_id IN (\n    SELECT\n      molecule_id\n    FROM\n      molecule\n    WHERE\n      label = 'carcinogenic'\n  )"
+    },
+    {
+        "question_id": 1451,
+        "db_id": "student_club",
+        "Original SQL": "SELECT T2.member_id FROM expense AS T1 INNER JOIN member AS T2 ON T1.link_to_member = T2.member_id INNER JOIN budget AS T3 ON T1.link_to_budget = T3.budget_id INNER JOIN event AS T4 ON T3.link_to_event = T4.event_id GROUP BY T2.member_id HAVING COUNT(DISTINCT T4.event_id) > 1 ORDER BY SUM(T1.cost) DESC LIMIT 1",
+        "Generated SQL": "SELECT first_name, last_name, SUM(cost)\nFROM member\nJOIN expense ON member.member_id = expense.link_to_member\nGROUP BY member.member_id\nHAVING COUNT(link_to_budget) > 1\nORDER BY SUM(cost) DESC\nLIMIT 1"
+    },
+    {
+        "question_id": 1098,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT t2.chanceCreationPassing, t2.chanceCreationPassingClass FROM Team AS t1 INNER JOIN Team_Attributes AS t2 ON t1.team_api_id = t2.team_api_id WHERE t1.team_long_name = 'Ajax' ORDER BY t2.chanceCreationPassing DESC LIMIT 1",
+        "Generated SQL": "SELECT * FROM Team_Attributes\nWHERE team_api_id = (SELECT team_api_id FROM Team WHERE team_short_name = 'Ajax')\nAND chanceCreationPassing > 0\nORDER BY chanceCreationPassing DESC\nLIMIT 1"
+    },
+    {
+        "question_id": 321,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT T1.molecule_id FROM bond AS T1 INNER JOIN connected AS T2 ON T1.bond_id = T2.bond_id WHERE T2.atom_id = 'TR000_2' AND T2.atom_id2 = 'TR000_4'",
+        "Generated SQL": "SELECT molecule_id\nFROM molecule\nWHERE molecule_id IN (\n    SELECT DISTINCT molecule_id\n    FROM atom\n    WHERE atom_id IN ('TR000_2', 'TR000_4')\n)"
+    },
+    {
+        "question_id": 20,
+        "db_id": "california_schools",
+        "Original SQL": "SELECT COUNT(T1.`School Name`) FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.County = 'Amador' AND T1.`Low Grade` = 9 AND T1.`High Grade` = 12",
+        "Generated SQL": "SELECT COUNT(*) FROM schools\nWHERE County = 'Amador'\nAND Low Grade = 9\nAND High Grade = 12"
+    },
+    {
+        "question_id": 302,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT DISTINCT T1.element FROM atom AS T1 INNER JOIN connected AS T2 ON T1.atom_id = T2.atom_id WHERE T2.bond_id = 'TR001_2_4'",
+        "Generated SQL": "SELECT element FROM atom\nWHERE atom_id IN (\n  SELECT atom_id2 FROM connected\n  WHERE bond_id = 'TR001_2_4'\n)"
+    },
+    {
+        "question_id": 1011,
+        "db_id": "formula_1",
+        "Original SQL": "WITH lap_times_in_seconds AS (SELECT driverId, (CASE WHEN SUBSTR(time, 1, INSTR(time, ':') - 1) <> '' THEN CAST(SUBSTR(time, 1, INSTR(time, ':') - 1) AS REAL) * 60 ELSE 0 END + CASE WHEN SUBSTR(time, INSTR(time, ':') + 1, INSTR(time, '.') - INSTR(time, ':') - 1) <> '' THEN CAST(SUBSTR(time, INSTR(time, ':') + 1, INSTR(time, '.') - INSTR(time, ':') - 1) AS REAL) ELSE 0 END + CASE WHEN SUBSTR(time, INSTR(time, '.') + 1) <> '' THEN CAST(SUBSTR(time, INSTR(time, '.') + 1) AS REAL) / 1000 ELSE 0 END) AS time_in_seconds FROM lapTimes) SELECT T2.forename, T2.surname, T1.driverId FROM (SELECT driverId, MIN(time_in_seconds) AS min_time_in_seconds FROM lap_times_in_seconds GROUP BY driverId) AS T1 INNER JOIN drivers AS T2 ON T1.driverId = T2.driverId ORDER BY T1.min_time_in_seconds ASC LIMIT 20",
+        "Generated SQL": "SELECT drivers.forename, drivers.surname\nFROM drivers\nINNER JOIN lapTimes\nON drivers.driverId = lapTimes.driverId\nORDER BY lapTimes.milliseconds ASC\nLIMIT 20"
+    },
+    {
+        "question_id": 830,
+        "db_id": "superhero",
+        "Original SQL": "SELECT T3.attribute_name FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T2.attribute_id = T3.id WHERE T1.superhero_name = 'Black Panther' ORDER BY T2.attribute_value ASC LIMIT 1",
+        "Generated SQL": "SELECT attribute_name\nFROM attribute\nINNER JOIN hero_attribute ON attribute.id = hero_attribute.attribute_id\nINNER JOIN superhero ON hero_attribute.hero_id = superhero.id\nWHERE superhero.superhero_name = 'Black Panther'\nORDER BY attribute_value ASC\nLIMIT 1"
+    },
+    {
+        "question_id": 313,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT COUNT(T.atom_id) FROM atom AS T WHERE T.molecule_id = 'TR001'",
+        "Generated SQL": "SELECT COUNT(*) FROM atom WHERE molecule_id = 'TR001'"
+    },
+    {
+        "question_id": 950,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT T2.name FROM constructorStandings AS T1 INNER JOIN constructors AS T2 on T1.constructorId = T2.constructorId WHERE T1.points = 0 AND T1.raceId = 291",
+        "Generated SQL": "SELECT name FROM constructors WHERE constructorId IN (SELECT constructorId FROM constructorResults WHERE raceId = 291 AND points = 0)"
+    },
+    {
+        "question_id": 15,
+        "db_id": "california_schools",
+        "Original SQL": "SELECT T1.District FROM schools AS T1 INNER JOIN satscores AS T2 ON T1.CDSCode = T2.cds WHERE T1.StatusType = 'Active' ORDER BY T2.AvgScrRead DESC LIMIT 1",
+        "Generated SQL": "SELECT District FROM schools\nWHERE StatusType = 'Active'\nGROUP BY District\nORDER BY AvgScrRead DESC\nLIMIT 1"
+    },
+    {
+        "question_id": 611,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT T1.Reputation FROM users AS T1 INNER JOIN badges AS T2 ON T1.Id = T2.UserId WHERE T2.Date = '2010-07-19 19:39:08.0'",
+        "Generated SQL": "SELECT DISTINCT users.DisplayName\nFROM users\nINNER JOIN badges ON users.Id = badges.UserId\nWHERE badges.Date = '2010-07-19 19:39:08'"
+    },
+    {
+        "question_id": 1418,
+        "db_id": "student_club",
+        "Original SQL": "SELECT T2.category FROM event AS T1 INNER JOIN budget AS T2 ON T1.event_id = T2.link_to_event WHERE T1.location = 'MU 215'",
+        "Generated SQL": "SELECT type FROM event WHERE location = 'MU 215'"
+    },
+    {
+        "question_id": 262,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT DISTINCT T1.molecule_id FROM bond AS T1 INNER JOIN molecule AS T2 ON T1.molecule_id = T2.molecule_id WHERE T2.label = '-' AND T1.bond_type = '-'",
+        "Generated SQL": "SELECT DISTINCT molecule_id\nFROM molecule\nWHERE molecule_id NOT IN (\n    SELECT DISTINCT molecule_id\n    FROM bond\n    WHERE bond_type ='single'\n)"
+    },
+    {
+        "question_id": 350,
+        "db_id": "card_games",
+        "Original SQL": "SELECT T2.language FROM cards AS T1 INNER JOIN foreign_data AS T2 ON T1.uuid = T2.uuid WHERE T1.name = 'Annul' AND T1.number = 29",
+        "Generated SQL": "SELECT DISTINCT language FROM set_translations WHERE setCode = 'M19' AND translation = 'Annul'"
+    },
+    {
+        "question_id": 1104,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT t2.potential FROM Player AS t1 INNER JOIN Player_Attributes AS t2 ON t1.player_api_id = t2.player_api_id WHERE SUBSTR(t2.`date`, 1, 10) = '2010-08-30' AND t1.player_name = 'Francesco Parravicini'",
+        "Generated SQL": "SELECT * FROM Player_Attributes\nWHERE player_api_id = 1\nAND date = '2010-08-30'\nAND potential = (SELECT MAX(potential) FROM Player_Attributes WHERE player_api_id = 1 AND date = '2010-08-30')"
+    },
+    {
+        "question_id": 213,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT T1.bond_type FROM bond AS T1 INNER JOIN connected AS T2 ON T1.bond_id = T2.bond_id WHERE T2.atom_id = 'TR004_8' AND T2.atom_id2 = 'TR004_20' OR T2.atom_id2 = 'TR004_8' AND T2.atom_id = 'TR004_20'",
+        "Generated SQL": "SELECT bond_type\nFROM bond\nWHERE bond_id IN (\n    SELECT bond_id\n    FROM connected\n    WHERE atom_id = 'TR004_8' AND atom_id2 = 'TR004_20'\n)"
+    },
+    {
+        "question_id": 562,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT COUNT(T1.Id) FROM posts AS T1 INNER JOIN comments AS T2 ON T1.Id = T2.PostId WHERE T1.ViewCount = 1910",
+        "Generated SQL": "SELECT COUNT(*)\nFROM comments\nWHERE PostId =?"
+    },
+    {
+        "question_id": 1475,
+        "db_id": "debit_card_specializing",
+        "Original SQL": "SELECT COUNT(*) FROM ( SELECT T2.CustomerID FROM customers AS T1 INNER JOIN yearmonth AS T2 ON T1.CustomerID = T2.CustomerID WHERE T1.Segment = 'KAM' AND SUBSTRING(T2.Date, 1, 4) = '2012' GROUP BY T2.CustomerID HAVING SUM(T2.Consumption) < 30000 ) AS t1",
+        "Generated SQL": "SELECT COUNT(*) FROM customers\nWHERE Segment = 'KAM' AND Consumption < 30000 AND Date BETWEEN '2012-01-01' AND '2012-12-31'"
+    },
+    {
+        "question_id": 1034,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT player_api_id FROM Player_Attributes WHERE SUBSTR(`date`, 1, 4) = '2010' ORDER BY overall_rating DESC LIMIT 1",
+        "Generated SQL": "SELECT player_api_id\nFROM Player_Attributes\nWHERE date = '2010-01-01'\nORDER BY overall_rating DESC\nLIMIT 1"
+    },
+    {
+        "question_id": 279,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT T2.label FROM bond AS T1 INNER JOIN molecule AS T2 ON T1.molecule_id = T2.molecule_id WHERE T1.bond_id = 'TR001_10_11'",
+        "Generated SQL": "SELECT label\nFROM molecule\nJOIN bond ON bond.molecule_id = molecule.molecule_id\nWHERE bond.bond_id = 'TR001_10_11'"
+    },
+    {
+        "question_id": 972,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT T2.driverId, T2.code FROM results AS T1 INNER JOIN drivers AS T2 on T1.driverId = T2.driverId WHERE STRFTIME('%Y', T2.dob) = '1971' AND T1.fastestLapTime IS NOT NULL",
+        "Generated SQL": "SELECT drivers.driverId, drivers.code\nFROM drivers\nWHERE drivers.dob LIKE '1971-01-01%'\nORDER BY lapTimes.milliseconds ASC\nLIMIT 1"
+    },
+    {
+        "question_id": 1084,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT COUNT(DISTINCT t1.player_name) FROM Player AS t1 INNER JOIN Player_Attributes AS t2 ON t1.player_api_id = t2.player_api_id WHERE STRFTIME('%Y',t1.birthday) < '1986' AND t2.defensive_work_rate = 'high'",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 853,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT DISTINCT T2.name FROM circuits AS T1 INNER JOIN races AS T2 ON T2.circuitID = T1.circuitId WHERE T1.country = 'Spain'",
+        "Generated SQL": "SELECT name FROM races JOIN circuits ON races.circuitId = circuits.circuitId WHERE country = 'Spain'"
+    },
+    {
+        "question_id": 1257,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT COUNT(DISTINCT T1.ID) FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T2.CRE >= 1.5 AND STRFTIME('%Y', Date('now')) - STRFTIME('%Y', T1.Birthday) < 70",
+        "Generated SQL": "SELECT COUNT(*) FROM Patient\nWHERE ID IN (\n  SELECT ID FROM Laboratory\n  WHERE CRE > 1.5\n) AND BIRTHDAY > '1970-01-01'"
+    },
+    {
+        "question_id": 920,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT DISTINCT T2.year FROM circuits AS T1 INNER JOIN races AS T2 ON T2.circuitID = T1.circuitId WHERE T1.name = 'Silverstone Circuit'",
+        "Generated SQL": "SELECT DISTINCT year FROM races WHERE circuitId = (SELECT circuitId FROM circuits WHERE name = 'Silverstone Circuit')"
+    },
+    {
+        "question_id": 41,
+        "db_id": "california_schools",
+        "Original SQL": "SELECT School FROM (SELECT T2.School,T1.AvgScrRead, RANK() OVER (PARTITION BY T2.County ORDER BY T1.AvgScrRead DESC) AS rnk FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE T2.Virtual = 'F' ) ranked_schools WHERE rnk <= 5",
+        "Generated SQL": "SELECT DISTINCT schools.School\nFROM schools\nJOIN satscores ON schools.CDSCode = satscores.cds\nWHERE schools.Virtual = 1\nORDER BY satscores.AvgScrRead DESC\nLIMIT 5"
+    },
+    {
+        "question_id": 1366,
+        "db_id": "student_club",
+        "Original SQL": "SELECT DISTINCT T3.member_id FROM event AS T1 INNER JOIN attendance AS T2 ON T1.event_id = T2.link_to_event INNER JOIN member AS T3 ON T2.link_to_member = T3.member_id WHERE T1.event_name = 'October Meeting'",
+        "Generated SQL": "SELECT * FROM member\nWHERE member_id IN (\n  SELECT link_to_member FROM attendance\n  WHERE link_to_event = \"October Meeting\"\n)"
+    },
+    {
+        "question_id": 258,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT DISTINCT T3.bond_type FROM atom AS T1 INNER JOIN connected AS T2 ON T1.atom_id = T2.atom_id INNER JOIN bond AS T3 ON T3.bond_id = T2.bond_id WHERE T1.element = 'sn'",
+        "Generated SQL": "SELECT bond_type\nFROM bond\nJOIN atom ON atom.atom_id = bond.atom_id\nWHERE atom.element = 'Tin'"
+    },
+    {
+        "question_id": 1527,
+        "db_id": "debit_card_specializing",
+        "Original SQL": "SELECT GasStationID FROM transactions_1k GROUP BY GasStationID ORDER BY SUM(Price) DESC LIMIT 1",
+        "Generated SQL": "SELECT gasstations.GasStationID, SUM(transactions_1k.Amount)\nFROM gasstations\nINNER JOIN transactions_1k ON gasstations.GasStationID = transactions_1k.GasStationID\nGROUP BY gasstations.GasStationID\nORDER BY SUM(transactions_1k.Amount) DESC\nLIMIT 1"
+    },
+    {
+        "question_id": 1087,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT COUNT(DISTINCT t1.id) FROM Player AS t1 INNER JOIN Player_Attributes AS t2 ON t1.player_api_id = t2.player_api_id WHERE t1.height > 180 AND t2.volleys > 70",
+        "Generated SQL": "SELECT COUNT(*) FROM Player\nWHERE height > 180\nAND volley > 70"
+    },
+    {
+        "question_id": 1399,
+        "db_id": "student_club",
+        "Original SQL": "SELECT CASE WHEN T3.event_name = 'Women''s Soccer' THEN 'YES' END AS result FROM member AS T1 INNER JOIN attendance AS T2 ON T1.member_id = T2.link_to_member INNER JOIN event AS T3 ON T2.link_to_event = T3.event_id WHERE T1.first_name = 'Maya' AND T1.last_name = 'Mclean'",
+        "Generated SQL": "SELECT * FROM event WHERE event_name = 'Women's Soccer'"
+    },
+    {
+        "question_id": 7,
+        "db_id": "california_schools",
+        "Original SQL": "SELECT T2.Phone FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.NumGE1500 DESC LIMIT 1",
+        "Generated SQL": "SELECT phone FROM schools\nINNER JOIN satscores ON schools.CDSCode = satscores.cds\nWHERE NumGE1500 = (SELECT MAX(NumGE1500) FROM satscores)"
+    },
+    {
+        "question_id": 1327,
+        "db_id": "student_club",
+        "Original SQL": "SELECT T1.first_name, T1.last_name FROM member AS T1 INNER JOIN attendance AS T2 ON T1.member_id = T2.link_to_member INNER JOIN event AS T3 ON T2.link_to_event = T3.event_id WHERE T3.event_name = 'Laugh Out Loud'",
+        "Generated SQL": "SELECT first_name, last_name\nFROM member\nWHERE member_id IN (\n  SELECT link_to_member\n  FROM attendance\n  WHERE link_to_event = \"Laugh Out Loud\"\n)"
+    },
+    {
+        "question_id": 36,
+        "db_id": "california_schools",
+        "Original SQL": "SELECT T2.AdmFName1, T2.AdmLName1, T2.AdmFName2, T2.AdmLName2, T2.AdmFName3, T2.AdmLName3 FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode ORDER BY T1.NumGE1500 DESC LIMIT 1",
+        "Generated SQL": "SELECT s.AdmFName1, s.AdmLName1\nFROM schools s\nJOIN satscores ss ON s.CDSCode = ss.cds\nWHERE ss.NumGE1500 = (SELECT MAX(NumGE1500) FROM satscores)"
+    },
+    {
+        "question_id": 956,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT T2.forename, T2.surname FROM results AS T1 INNER JOIN drivers AS T2 on T1.driverId = T2.driverId WHERE STRFTIME('%Y', T2.dob) > '1975' AND T1.rank = 2",
+        "Generated SQL": "SELECT forename, surname FROM drivers\nWHERE dob > '1975-01-01'\nAND position = 2"
+    },
+    {
+        "question_id": 619,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT COUNT(T1.Id) FROM users AS T1 INNER JOIN badges AS T2 ON T1.Id = T2.UserId WHERE T2.Name = 'Supporter' AND T1.Age BETWEEN 19 AND 65",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 1378,
+        "db_id": "student_club",
+        "Original SQL": "SELECT MAX(spent) FROM budget",
+        "Generated SQL": "SELECT MAX(spent) FROM budget"
+    },
+    {
+        "question_id": 829,
+        "db_id": "superhero",
+        "Original SQL": "SELECT SUM(CASE WHEN T2.publisher_name = 'DC Comics' THEN 1 ELSE 0 END) - SUM(CASE WHEN T2.publisher_name = 'Marvel Comics' THEN 1 ELSE 0 END) FROM superhero AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.id",
+        "Generated SQL": "SELECT publisher_name, COUNT(*)\nFROM superhero\nGROUP BY publisher_name\nORDER BY COUNT(*) DESC\nLIMIT 1"
+    },
+    {
+        "question_id": 1197,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT `First Date`, Diagnosis FROM Patient WHERE ID = 48473",
+        "Generated SQL": "SELECT Patient.Birthday, Patient.Description, Patient.First Date, Patient.Admission, Patient.Diagnosis\nFROM Patient\nWHERE Patient.ID = 48473"
+    },
+    {
+        "question_id": 709,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT COUNT(T1.Id) FROM comments AS T1 INNER JOIN posts AS T2 ON T1.PostId = T2.Id WHERE T2.ViewCount < 5 AND T2.Score = 0",
+        "Generated SQL": "SELECT COUNT(*)\nFROM comments\nWHERE Score = 0\n  AND ViewCount < 5"
+    },
+    {
+        "question_id": 81,
+        "db_id": "california_schools",
+        "Original SQL": "SELECT T2.City, T1.`Low Grade`, T1.`School Name` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.State = 'CA' ORDER BY T2.Latitude ASC LIMIT 1",
+        "Generated SQL": "SELECT city, state, school, grade\nFROM schools\nWHERE state = 'California'\nORDER BY latitude ASC\nLIMIT 1"
+    },
+    {
+        "question_id": 1054,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT DISTINCT t2.defensive_work_rate FROM Player AS t1 INNER JOIN Player_Attributes AS t2 ON t1.player_api_id = t2.player_api_id WHERE t1.player_name = 'David Wilson'",
+        "Generated SQL": "SELECT * FROM Player_Attributes\nWHERE player_name = 'David Wilson'"
+    },
+    {
+        "question_id": 767,
+        "db_id": "superhero",
+        "Original SQL": "SELECT CAST(COUNT(*) AS REAL) / SUM(CASE WHEN T2.id = 1 THEN 1 ELSE 0 END) FROM superhero AS T1 INNER JOIN colour AS T2 ON T1.skin_colour_id = T2.id",
+        "Generated SQL": "SELECT AVG(height_cm)\nFROM superhero\nWHERE skin_colour_id IS NULL"
+    },
+    {
+        "question_id": 907,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT DISTINCT T2.name, T1.country FROM circuits AS T1 INNER JOIN races AS T2 ON T2.circuitID = T1.circuitId WHERE T2.year = 2017 ORDER BY T2.date ASC",
+        "Generated SQL": "SELECT races.date, circuits.country\nFROM races\nINNER JOIN circuits ON races.circuitId = circuits.circuitId\nWHERE year = 2017\nORDER BY races.date"
+    },
+    {
+        "question_id": 427,
+        "db_id": "card_games",
+        "Original SQL": "SELECT T2.language FROM sets AS T1 INNER JOIN set_translations AS T2 ON T1.code = T2.setCode WHERE T1.mcmName = 'Archenemy' AND T2.setCode = 'ARC'",
+        "Generated SQL": "SELECT DISTINCT language FROM set_translations WHERE setCode = 'ARC'"
+    },
+    {
+        "question_id": 1342,
+        "db_id": "student_club",
+        "Original SQL": "SELECT cost FROM expense WHERE expense_description = 'Posters' AND expense_date = '2019-09-04'",
+        "Generated SQL": "SELECT cost\nFROM expense\nWHERE expense_description = \"Posters\"\nAND expense_date = \"2019/9/4\""
+    },
+    {
+        "question_id": 479,
+        "db_id": "card_games",
+        "Original SQL": "SELECT SUM(CASE WHEN T1.power LIKE '*' OR T1.power IS NULL THEN 1 ELSE 0 END) FROM cards AS T1 INNER JOIN sets AS T2 ON T2.code = T1.setCode WHERE T2.name = 'Coldsnap' AND T1.convertedManaCost > 5",
+        "Generated SQL": "SELECT COUNT(*) FROM cards\nWHERE setCode = 'CSD' AND convertedManaCost > 5 AND power = '0'"
+    },
+    {
+        "question_id": 63,
+        "db_id": "california_schools",
+        "Original SQL": "SELECT AdmFName1, AdmLName1, School, City FROM schools WHERE Charter = 1 AND CharterNum = '00D2'",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 1517,
+        "db_id": "debit_card_specializing",
+        "Original SQL": "SELECT T2.Segment FROM transactions_1k AS T1 INNER JOIN customers AS T2 ON T1.CustomerID = T2.CustomerID ORDER BY Date ASC LIMIT 1",
+        "Generated SQL": "SELECT Segment FROM customers WHERE CustomerID = (SELECT MIN(CustomerID) FROM customers)"
+    },
+    {
+        "question_id": 1523,
+        "db_id": "debit_card_specializing",
+        "Original SQL": "SELECT T2.Country FROM transactions_1k AS T1 INNER JOIN gasstations AS T2 ON T1.GasStationID = T2.GasStationID WHERE T1.CardID = '667467'",
+        "Generated SQL": "SELECT Country\nFROM gasstations\nWHERE GasStationID = 667467"
+    },
+    {
+        "question_id": 93,
+        "db_id": "financial",
+        "Original SQL": "SELECT COUNT(T1.client_id) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'M' AND T2.A3 = 'north Bohemia' AND T2.A11 > 8000",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 1157,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT DISTINCT T1.ID, T1.SEX, T1.Diagnosis FROM Patient AS T1 INNER JOIN Examination AS T2 ON T1.ID = T2.ID WHERE T2.Thrombosis = 2",
+        "Generated SQL": "SELECT ID, SEX, DIAGNOSIS\nFROM Patient\nWHERE Thrombosis ='severe'"
+    },
+    {
+        "question_id": 1045,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT DISTINCT t2.attacking_work_rate FROM Player AS t1 INNER JOIN Player_Attributes AS t2 ON t1.player_api_id = t2.player_api_id WHERE t1.player_name = 'Franco Zennaro'",
+        "Generated SQL": "SELECT Player_Attributes.attacking_work_rate\nFROM Player_Attributes\nINNER JOIN Player\nON Player_Attributes.player_api_id = Player.player_api_id\nWHERE Player.player_name = 'Fr<NAME>'"
+    },
+    {
+        "question_id": 745,
+        "db_id": "superhero",
+        "Original SQL": "SELECT id FROM publisher WHERE publisher_name = 'Star Trek'",
+        "Generated SQL": "SELECT publisher_id FROM superhero WHERE publisher_name = 'Star Trek'"
+    },
+    {
+        "question_id": 604,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT AVG(T1.UpVotes), AVG(T1.Age) FROM users AS T1 INNER JOIN ( SELECT OwnerUserId, COUNT(*) AS post_count FROM posts GROUP BY OwnerUserId HAVING post_count > 10) AS T2 ON T1.Id = T2.OwnerUserId",
+        "Generated SQL": "SELECT AVG(upvotes) AS avg_upvotes, AVG(age) AS avg_age\nFROM users\nINNER JOIN posts ON users.id = posts.owneruserid\nWHERE posts.posttypeid = 1 AND users.reputation > 10"
+    },
+    {
+        "question_id": 438,
+        "db_id": "card_games",
+        "Original SQL": "SELECT language FROM set_translations WHERE id = 174",
+        "Generated SQL": "SELECT set_translations.language\nFROM set_translations\nWHERE set_translations.setCode = \"174\""
+    },
+    {
+        "question_id": 60,
+        "db_id": "california_schools",
+        "Original SQL": "SELECT Website FROM schools WHERE County = 'San Joaquin' AND Virtual = 'P' AND Charter = 1",
+        "Generated SQL": "SELECT Website\nFROM schools\nWHERE Charter = 1\nAND Virtual = 1\nAND State = 'CA'\nAND County = 'San Joaquin'"
+    },
+    {
+        "question_id": 149,
+        "db_id": "financial",
+        "Original SQL": "SELECT T3.type FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id INNER JOIN disp AS T3 ON T2.account_id = T3.account_id WHERE T3.type != 'OWNER' AND T1.A11 BETWEEN 8000 AND 9000",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 1138,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT name FROM Country WHERE id IN ( SELECT country_id FROM League WHERE name = 'Poland Ekstraklasa' )",
+        "Generated SQL": "SELECT country.name\nFROM Country\nWHERE country.id = (\n    SELECT league.country_id\n    FROM League\n    WHERE league.name = 'Poland Ekstraklasa'\n)"
+    },
+    {
+        "question_id": 179,
+        "db_id": "financial",
+        "Original SQL": "SELECT SUM(T3.amount) FROM client AS T1 INNER JOIN disp AS T4 ON T1.client_id = T4.client_id INNER JOIN account AS T2 ON T4.account_id = T2.account_id INNER JOIN trans AS T3 ON T2.account_id = T3.account_id WHERE STRFTIME('%Y', T3.date)= '1998' AND T1.client_id = 617",
+        "Generated SQL": "SELECT SUM(amount)\nFROM trans\nWHERE client_id = 617\n  AND date BETWEEN '1998-01-01' AND '1998-12-31'"
+    },
+    {
+        "question_id": 278,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT COUNT(DISTINCT T2.molecule_id) FROM bond AS T1 INNER JOIN molecule AS T2 ON T1.molecule_id = T2.molecule_id WHERE T2.label = '-' AND T1.bond_type = '-'",
+        "Generated SQL": "SELECT COUNT(*)\nFROM molecule\nWHERE molecule_id IN (\n  SELECT molecule_id\n  FROM bond\n  WHERE bond_type ='single'\n  GROUP BY molecule_id\n  HAVING COUNT(*) = 1\n)\nAND molecule_id NOT IN (\n  SELECT molecule_id\n  FROM bond\n  WHERE bond_type = 'double'\n)"
+    },
+    {
+        "question_id": 552,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT T1.`Name` FROM badges AS T1 INNER JOIN users AS T2 ON T1.UserId = T2.Id WHERE T2.DisplayName = 'csgillespie'",
+        "Generated SQL": "SELECT DISTINCT Name\nFROM badges\nWHERE UserId = 1"
+    },
+    {
+        "question_id": 690,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT T1.Name FROM badges AS T1 INNER JOIN users AS T2 ON T1.UserId = T2.Id WHERE T2.DisplayName = 'Emmett' ORDER BY T1.Date DESC LIMIT 1",
+        "Generated SQL": "SELECT *\nFROM badges\nWHERE UserDisplayName = 'Emmett'\nORDER BY Date DESC\nLIMIT 1"
+    },
+    {
+        "question_id": 198,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT AVG(single_bond_count) FROM (SELECT T3.molecule_id, COUNT(T1.bond_type) AS single_bond_count FROM bond AS T1  INNER JOIN atom AS T2 ON T1.molecule_id = T2.molecule_id INNER JOIN molecule AS T3 ON T3.molecule_id = T2.molecule_id WHERE T1.bond_type = '-' AND T3.label = '+' GROUP BY T3.molecule_id) AS subquery",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 944,
+        "db_id": "formula_1",
+        "Original SQL": "WITH time_in_seconds AS ( SELECT T1.positionOrder, CASE WHEN T1.positionOrder = 1 THEN (CAST(SUBSTR(T1.time, 1, 1) AS REAL) * 3600) + (CAST(SUBSTR(T1.time, 3, 2) AS REAL) * 60) + CAST(SUBSTR(T1.time, 6) AS REAL) ELSE CAST(SUBSTR(T1.time, 2) AS REAL) END AS time_seconds FROM results AS T1 INNER JOIN races AS T2 ON T1.raceId = T2.raceId WHERE T2.name = 'Australian Grand Prix' AND T1.time IS NOT NULL AND T2.year = 2008 ), champion_time AS ( SELECT time_seconds FROM time_in_seconds WHERE positionOrder = 1), last_driver_incremental AS ( SELECT time_seconds FROM time_in_seconds WHERE positionOrder = (SELECT MAX(positionOrder) FROM time_in_seconds) ) SELECT (CAST((SELECT time_seconds FROM last_driver_incremental) AS REAL) * 100) / (SELECT time_seconds + (SELECT time_seconds FROM last_driver_incremental) FROM champion_time)",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 812,
+        "db_id": "superhero",
+        "Original SQL": "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN colour AS T2 ON T1.eye_colour_id = T2.id WHERE T2.colour = 'Blue' LIMIT 5",
+        "Generated SQL": "SELECT superhero_name FROM superhero WHERE eye_colour_id = (SELECT id FROM colour WHERE colour = 'blue')"
+    },
+    {
+        "question_id": 1415,
+        "db_id": "student_club",
+        "Original SQL": "SELECT T2.position FROM major AS T1 INNER JOIN member AS T2 ON T1.major_id = T2.link_to_major WHERE T1.major_name = 'Business'",
+        "Generated SQL": "SELECT position\nFROM member\nWHERE link_to_major = 'Business'"
+    },
+    {
+        "question_id": 1278,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT COUNT(T1.ID) FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T2.IGG > 900 AND T2.IGG <2000 AND  T1.Admission = '+'",
+        "Generated SQL": "SELECT COUNT(*) FROM Patient\nWHERE IGG = 'Normal'"
+    },
+    {
+        "question_id": 432,
+        "db_id": "card_games",
+        "Original SQL": "SELECT T1.id FROM sets AS T1 INNER JOIN set_translations AS T2 ON T1.code = T2.setCode WHERE T2.language = 'Russian' GROUP BY T1.baseSetSize ORDER BY T1.baseSetSize DESC LIMIT 1",
+        "Generated SQL": "SELECT setCode, count(*) as total FROM set_translations WHERE language = 'ru' GROUP BY setCode ORDER BY total DESC LIMIT 1"
+    },
+    {
+        "question_id": 291,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT COUNT(T.molecule_id) FROM molecule AS T WHERE T.label = '+'",
+        "Generated SQL": "SELECT COUNT(*) FROM molecule WHERE label = 'carcinogenic'"
+    },
+    {
+        "question_id": 1192,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT DISTINCT T1.ID FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T1.Admission = '-' AND T2.`T-BIL` < 2.0 AND T2.Date LIKE '1991-10-%'",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 665,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT CAST(COUNT(T1.Id) AS REAL) / 12 FROM postLinks AS T1 INNER JOIN posts AS T2 ON T1.PostId = T2.Id WHERE T2.AnswerCount <= 2 AND STRFTIME('%Y', T1.CreationDate) = '2010'",
+        "Generated SQL": "SELECT AVG(LinkCount)\nFROM (\n  SELECT COUNT(*) AS LinkCount\n  FROM postLinks\n  WHERE PostId IN (\n    SELECT Id\n    FROM posts\n    WHERE AnswerCount < 3\n  )\n  AND CreationDate BETWEEN '2010-01-01' AND '2010-12-31'\n)"
+    },
+    {
+        "question_id": 866,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT DISTINCT T2.forename, T2.surname, T2.url FROM lapTimes AS T1 INNER JOIN drivers AS T2 ON T2.driverId = T1.driverId WHERE T1.raceId = 161 AND T1.time LIKE '1:27%'",
+        "Generated SQL": "SELECT drivers.url\nFROM drivers\nINNER JOIN lapTimes ON drivers.driverId = lapTimes.driverId\nWHERE lapTimes.time = '00:01:27'"
+    },
+    {
+        "question_id": 848,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT T2.year FROM circuits AS T1 INNER JOIN races AS T2 ON T2.circuitID = T1.circuitId WHERE T1.location = 'Shanghai'",
+        "Generated SQL": "SELECT year FROM races\nWHERE circuitId IN (\n    SELECT circuitId FROM circuits\n    WHERE name = 'Shanghai'\n)"
+    },
+    {
+        "question_id": 558,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT COUNT(Id) FROM votes WHERE UserId = 58 AND CreationDate = '2010-07-19'",
+        "Generated SQL": "SELECT COUNT(*) FROM votes WHERE UserId = 58 AND CreationDate = '2010-07-19'"
+    },
+    {
+        "question_id": 39,
+        "db_id": "california_schools",
+        "Original SQL": "SELECT AVG(T1.NumTstTakr) FROM satscores AS T1 INNER JOIN schools AS T2 ON T1.cds = T2.CDSCode WHERE strftime('%Y', T2.OpenDate) = '1980' AND T2.County = 'Fresno'",
+        "Generated SQL": "SELECT AVG(NumTstTakr)\nFROM satscores\nWHERE cds IN (SELECT CDSCode FROM schools WHERE City = 'Fresno' AND OpenDate BETWEEN '1980-01-01' AND '1980-12-31')"
+    },
+    {
+        "question_id": 48,
+        "db_id": "california_schools",
+        "Original SQL": "SELECT CAST(SUM(CASE WHEN DOC = 54 THEN 1 ELSE 0 END) AS REAL) / SUM(CASE WHEN DOC = 52 THEN 1 ELSE 0 END) FROM schools WHERE StatusType = 'Merged' AND County = 'Orange'",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 751,
+        "db_id": "superhero",
+        "Original SQL": "SELECT T3.power_name FROM superhero AS T1 INNER JOIN hero_power AS T2 ON T1.id = T2.hero_id INNER JOIN superpower AS T3 ON T3.id = T2.power_id INNER JOIN gender AS T4 ON T4.id = T1.gender_id WHERE T4.gender = 'Male' LIMIT 5",
+        "Generated SQL": "SELECT power_name FROM superpower\nJOIN hero_power ON superpower.id = hero_power.power_id\nJOIN superhero ON hero_power.hero_id = superhero.id\nWHERE superhero.gender_id = 1"
+    },
+    {
+        "question_id": 464,
+        "db_id": "card_games",
+        "Original SQL": "SELECT DISTINCT T1.name FROM cards AS T1 INNER JOIN set_translations AS T2 ON T2.setCode = T1.setCode WHERE T2.translation = 'Hauptset Zehnte Edition'",
+        "Generated SQL": "SELECT name FROM cards WHERE setCode = \"HS10\""
+    },
+    {
+        "question_id": 108,
+        "db_id": "financial",
+        "Original SQL": "SELECT T3.amount FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN trans AS T3 ON T2.account_id = T3.account_id ORDER BY T1.amount DESC, T3.date ASC LIMIT 1",
+        "Generated SQL": "SELECT\n  client.client_id,\n  trans.amount\nFROM\n  client\n  JOIN loan ON client.client_id = loan.account_id\n  JOIN trans ON loan.account_id = trans.account_id\nORDER BY\n  loan.amount DESC\nLIMIT 1"
+    },
+    {
+        "question_id": 106,
+        "db_id": "financial",
+        "Original SQL": "SELECT T4.amount FROM card AS T1 JOIN disp AS T2 ON T1.disp_id = T2.disp_id JOIN account AS T3 on T2.account_id = T3.account_id JOIN trans AS T4 on T3.account_id = T4.account_id WHERE T1.issued = '1996-10-21' ORDER BY T4.amount DESC LIMIT 1",
+        "Generated SQL": "SELECT MAX(amount) FROM trans WHERE date = '1996-10-21'"
+    },
+    {
+        "question_id": 1202,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT COUNT(T1.ID) FROM Patient AS T1 INNER JOIN Examination AS T2 ON T1.ID = T2.ID WHERE T2.Diagnosis = 'Behcet' AND T1.SEX = 'M' AND STRFTIME('%Y', T2.`Examination Date`) BETWEEN '1995' AND '1997' AND T1.Admission = '-'",
+        "Generated SQL": "SELECT COUNT(*)\nFROM Patient\nWHERE SEX = 'M'\nAND (First Date BETWEEN '1995-01-01' AND '1997-12-31')\nAND NOT Admission LIKE '%hospital%'"
+    },
+    {
+        "question_id": 426,
+        "db_id": "card_games",
+        "Original SQL": "SELECT name FROM sets WHERE mtgoCode IS NULL ORDER BY name LIMIT 3",
+        "Generated SQL": "SELECT code, name FROM sets WHERE isOnlineOnly = 0 ORDER BY name ASC LIMIT 3"
+    },
+    {
+        "question_id": 901,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT DISTINCT T2.name, T1.name, T1.location FROM circuits AS T1 INNER JOIN races AS T2 ON T2.circuitID = T1.circuitId WHERE T2.year = 2005 AND STRFTIME('%m', T2.date) = '09'",
+        "Generated SQL": "SELECT name, location FROM races WHERE date BETWEEN '2005-09-01' AND '2005-09-30'"
+    },
+    {
+        "question_id": 755,
+        "db_id": "superhero",
+        "Original SQL": "SELECT T1.full_name FROM superhero AS T1 INNER JOIN race AS T2 ON T1.race_id = T2.id WHERE T2.race = 'Demi-God'",
+        "Generated SQL": "SELECT superhero_name FROM superhero WHERE full_name LIKE '%Demi-God%'"
+    },
+    {
+        "question_id": 1242,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT DISTINCT T1.ID FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T2.PLT BETWEEN 100 AND 400 AND STRFTIME('%Y', T2.Date) - STRFTIME('%Y', T1.Birthday) < 50 AND STRFTIME('%Y', T2.Date) = '1984'",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 1457,
+        "db_id": "student_club",
+        "Original SQL": "SELECT DISTINCT T3.first_name, T3.last_name, T3.phone FROM expense AS T1 INNER JOIN budget AS T2 ON T1.link_to_budget = T2.budget_id INNER JOIN member AS T3 ON T3.member_id = T1.link_to_member WHERE T1.cost > ( SELECT AVG(T1.cost) FROM expense AS T1 INNER JOIN budget AS T2 ON T1.link_to_budget = T2.budget_id INNER JOIN member AS T3 ON T3.member_id = T1.link_to_member )",
+        "Generated SQL": "SELECT first_name, last_name, phone\nFROM member\nWHERE member_id IN (\n  SELECT link_to_member\n  FROM expense\n  WHERE cost > (\n    SELECT AVG(cost)\n    FROM expense\n  )\n)"
+    },
+    {
+        "question_id": 169,
+        "db_id": "financial",
+        "Original SQL": "SELECT CAST((SUM(CASE WHEN STRFTIME('%Y', T1.date) = '1997' THEN T1.amount ELSE 0 END) - SUM(CASE WHEN STRFTIME('%Y', T1.date) = '1996' THEN T1.amount ELSE 0 END)) AS REAL) * 100 / SUM(CASE WHEN STRFTIME('%Y', T1.date) = '1996' THEN T1.amount ELSE 0 END) FROM loan AS T1 INNER JOIN account AS T2 ON T1.account_id = T2.account_id INNER JOIN disp AS T3 ON T3.account_id = T2.account_id INNER JOIN client AS T4 ON T4.client_id = T3.client_id WHERE T4.gender = 'M' AND T3.type = 'OWNER'",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 681,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT T1.DisplayName FROM users AS T1 INNER JOIN posts AS T2 ON T1.Id = T2.OwnerUserId WHERE STRFTIME('%Y', T2.CreaionDate) = '2011' AND T2.ViewCount > 20000",
+        "Generated SQL": "SELECT DISTINCT DisplayName\nFROM users\nWHERE Id IN (\n  SELECT DISTINCT OwnerUserId\n  FROM posts\n  WHERE ViewCount > 20000\n  AND CreationDate BETWEEN '2011-01-01' AND '2011-12-31'\n)"
+    },
+    {
+        "question_id": 483,
+        "db_id": "card_games",
+        "Original SQL": "SELECT DISTINCT T1.text FROM foreign_data AS T1 INNER JOIN cards AS T2 ON T2.uuid = T1.uuid INNER JOIN sets AS T3 ON T3.code = T2.setCode WHERE T3.name = 'Coldsnap' AND T1.language = 'Italian'",
+        "Generated SQL": "SELECT text FROM rulings WHERE uuid IN (SELECT uuid FROM cards WHERE setCode = 'Coldsnap') AND language = 'it'"
+    },
+    {
+        "question_id": 1086,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT t2.heading_accuracy FROM Player AS t1 INNER JOIN Player_Attributes AS t2 ON t1.player_api_id = t2.player_api_id WHERE t1.player_name = 'Ariel Borysiuk'",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 802,
+        "db_id": "superhero",
+        "Original SQL": "SELECT superhero_name FROM superhero ORDER BY height_cm DESC LIMIT 1",
+        "Generated SQL": "SELECT superhero_name\nFROM superhero\nWHERE height_cm = (\n  SELECT MAX(height_cm)\n  FROM superhero\n)"
+    },
+    {
+        "question_id": 223,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT T.atom_id FROM connected AS T WHERE T.bond_id = 'TR000_2_5'",
+        "Generated SQL": "SELECT atom_id FROM atom\nWHERE atom_id IN (\n  SELECT atom_id2 FROM connected\n  WHERE bond_id = 'TR000_2_5'\n)"
+    },
+    {
+        "question_id": 1498,
+        "db_id": "debit_card_specializing",
+        "Original SQL": "SELECT SUM(Consumption) FROM yearmonth WHERE SUBSTR(Date, 1, 4) = '2012' GROUP BY SUBSTR(Date, 5, 2) ORDER BY SUM(Consumption) DESC LIMIT 1",
+        "Generated SQL": "SELECT MAX(Consumption) FROM yearmonth WHERE Date LIKE '2012%'"
+    },
+    {
+        "question_id": 794,
+        "db_id": "superhero",
+        "Original SQL": "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T2.attribute_id = T3.id WHERE T3.attribute_name = 'Speed' ORDER BY T2.attribute_value DESC LIMIT 1",
+        "Generated SQL": "SELECT superhero_name\nFROM superhero\nWHERE height_cm = (SELECT MAX(height_cm) FROM superhero)"
+    },
+    {
+        "question_id": 23,
+        "db_id": "california_schools",
+        "Original SQL": "SELECT T1.School, T1.Street FROM schools AS T1 INNER JOIN frpm AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.`Enrollment (K-12)` - T2.`Enrollment (Ages 5-17)` > 30",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 32,
+        "db_id": "california_schools",
+        "Original SQL": "SELECT CAST(T1.`FRPM Count (K-12)` AS REAL) / T1.`Enrollment (K-12)` FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.SOC = 66 ORDER BY T1.`FRPM Count (K-12)` DESC LIMIT 5",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 435,
+        "db_id": "card_games",
+        "Original SQL": "SELECT id FROM cards WHERE borderColor = 'black' GROUP BY id",
+        "Generated SQL": "SELECT cards.id FROM cards WHERE cards.borderColor = 'black'"
+    },
+    {
+        "question_id": 103,
+        "db_id": "financial",
+        "Original SQL": "SELECT T2.client_id FROM client AS T1 INNER JOIN disp AS T2 ON T1.client_id = T2.client_id INNER JOIN card AS T3 ON T2.disp_id = T3.disp_id WHERE T3.issued = '1994-03-03'",
+        "Generated SQL": "SELECT client.client_id\nFROM client\nJOIN card ON client.client_id = card.client_id\nWHERE card.issued = '1994-03-03'"
+    },
+    {
+        "question_id": 1518,
+        "db_id": "debit_card_specializing",
+        "Original SQL": "SELECT T2.Country FROM transactions_1k AS T1 INNER JOIN gasstations AS T2 ON T1.GasStationID = T2.GasStationID WHERE T1.Date = '2012-08-24' AND T1.Time = '12:42:00'",
+        "Generated SQL": "SELECT DISTINCT Country FROM gasstations\nWHERE GasStationID IN (\n  SELECT GasStationID FROM transactions_1k\n  WHERE Date = '2012-08-24' AND Time = '12:42:00'\n)"
+    },
+    {
+        "question_id": 24,
+        "db_id": "california_schools",
+        "Original SQL": "SELECT T2.`School Name` FROM satscores AS T1 INNER JOIN frpm AS T2 ON T1.cds = T2.CDSCode WHERE CAST(T2.`Free Meal Count (K-12)` AS REAL) / T2.`Enrollment (K-12)` > 0.1 AND T1.NumGE1500 > 0",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 82,
+        "db_id": "california_schools",
+        "Original SQL": "SELECT GSoffered FROM schools ORDER BY ABS(longitude) DESC LIMIT 1",
+        "Generated SQL": "SELECT DISTINCT(High Grade) FROM frpm\nWHERE Longitude = (SELECT MAX(Longitude) FROM frpm)"
+    },
+    {
+        "question_id": 643,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT DisplayName, Age FROM users WHERE Views = ( SELECT MAX(Views) FROM users )",
+        "Generated SQL": "SELECT DisplayName, Age\nFROM users\nWHERE Id IN (\n  SELECT UserId\n  FROM posts\n  WHERE ViewCount = (\n    SELECT MAX(ViewCount)\n    FROM posts\n  )\n)"
+    },
+    {
+        "question_id": 543,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT MAX(T1.AnswerCount) FROM posts AS T1 INNER JOIN users AS T2 ON T1.OwnerUserId = T2.Id WHERE T2.DisplayName = 'csgillespie'",
+        "Generated SQL": "SELECT COUNT(*)\nFROM posts\nWHERE Id = (\n  SELECT PostId\n  FROM votes\n  WHERE UserId = (\n    SELECT Id\n    FROM users\n    WHERE DisplayName = 'csgillespie'\n  )\n  GROUP BY PostId\n  ORDER BY COUNT(*) DESC\n  LIMIT 1\n)"
+    },
+    {
+        "question_id": 1413,
+        "db_id": "student_club",
+        "Original SQL": "SELECT T1.zip FROM member AS T1 INNER JOIN expense AS T2 ON T1.member_id = T2.link_to_member WHERE T2.cost < 50",
+        "Generated SQL": "SELECT zip_code\nFROM member\nWHERE member.zip < 50"
+    },
+    {
+        "question_id": 347,
+        "db_id": "card_games",
+        "Original SQL": "SELECT T1.id, T2.text, T1.hasContentWarning FROM cards AS T1 INNER JOIN rulings AS T2 ON T1.uuid = T2.uuid WHERE T1.artist = 'Stephen Daniele'",
+        "Generated SQL": "SELECT cards.name, rulings.text, legalities.format, legalities.status\nFROM cards\nINNER JOIN foreign_data ON foreign_data.uuid = cards.uuid\nINNER JOIN rulings ON rulings.uuid = cards.uuid\nINNER JOIN legalities ON legalities.uuid = cards.uuid\nWHERE foreign_data.name = '<NAME>'"
+    },
+    {
+        "question_id": 1070,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT t1.name FROM Country AS t1 INNER JOIN League AS t2 ON t1.id = t2.country_id WHERE t2.name = 'Italy Serie A'",
+        "Generated SQL": "SELECT country.name\nFROM League\nINNER JOIN Country\nON League.country_id = Country.id\nWHERE League.name = 'Serie A'"
+    },
+    {
+        "question_id": 348,
+        "db_id": "card_games",
+        "Original SQL": "SELECT T2.text FROM cards AS T1 INNER JOIN rulings AS T2 ON T1.uuid = T2.uuid WHERE T1.name = 'Sublime Epiphany' AND T1.number = '74s'",
+        "Generated SQL": "SELECT * FROM rulings WHERE uuid = 'c8a9e9e0-f9e7-4a8c-a9c2-f9e9e9e9e9e9'"
+    },
+    {
+        "question_id": 556,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT CAST(COUNT(T1.Id) AS REAL) / COUNT(DISTINCT T2.DisplayName) FROM badges AS T1 INNER JOIN users AS T2 ON T1.UserId = T2.Id WHERE T2.Views > 200",
+        "Generated SQL": "SELECT AVG(badges.Name)\nFROM badges\nINNER JOIN users ON badges.UserId = users.Id\nINNER JOIN posts ON users.Id = posts.OwnerUserId\nWHERE posts.ViewCount > 200"
+    },
+    {
+        "question_id": 1391,
+        "db_id": "student_club",
+        "Original SQL": "SELECT SUM(CASE WHEN major_name = 'Finance' THEN 1 ELSE 0 END) / SUM(CASE WHEN major_name = 'Physics' THEN 1 ELSE 0 END) AS ratio FROM major",
+        "Generated SQL": "SELECT COUNT(*) / COUNT(*)\nFROM major\nWHERE major_name = 'Finance'\n/\nSELECT COUNT(*)\nFROM major\nWHERE major_name = 'Physics'"
+    },
+    {
+        "question_id": 346,
+        "db_id": "card_games",
+        "Original SQL": "SELECT T1.id, T1.artist FROM cards AS T1 INNER JOIN legalities AS T2 ON T1.uuid = T2.uuid WHERE T2.status = 'Legal' AND T2.format = 'commander' AND (T1.power IS NULL OR T1.power = '*')",
+        "Generated SQL": "SELECT cards.id, cards.artist\nFROM cards\nJOIN legalities ON cards.uuid = legalities.uuid\nWHERE cards.power = '0'\nAND legalities.format = 'Commander'\nAND legalities.status = 'Legal'"
+    },
+    {
+        "question_id": 573,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT Text FROM comments WHERE Score = 17",
+        "Generated SQL": "SELECT * FROM comments WHERE Score = 17"
+    },
+    {
+        "question_id": 1072,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT CAST(SUM(t2.overall_rating) AS REAL) / COUNT(t2.id) FROM Player AS t1 INNER JOIN Player_Attributes AS t2 ON t1.player_api_id = t2.player_api_id WHERE t1.player_name = 'Aaron Doran'",
+        "Generated SQL": "SELECT AVG(overall_rating) FROM Player_Attributes WHERE player_api_id = 1"
+    },
+    {
+        "question_id": 185,
+        "db_id": "financial",
+        "Original SQL": "SELECT CAST(SUM(T2.gender = 'F') AS REAL) / COUNT(T2.client_id) * 100 FROM district AS T1 INNER JOIN client AS T2 ON T1.district_id = T2.district_id WHERE T1.A3 = 'Prague'",
+        "Generated SQL": "SELECT COUNT(*) / (SELECT COUNT(*) FROM client WHERE district_id = 1)\nFROM client\nWHERE district_id = 1 AND gender = 'F'"
+    },
+    {
+        "question_id": 473,
+        "db_id": "card_games",
+        "Original SQL": "SELECT IIF(isForeignOnly = 1, 'YES', 'NO') FROM cards AS T1 INNER JOIN sets AS T2 ON T2.code = T1.setCode WHERE T1.name = 'Adarkar Valkyrie'",
+        "Generated SQL": "SELECT * FROM cards WHERE name = 'Adarkar Valkyrie' AND availability = 'https://mtgjson.com/api/v5/cards.json'"
+    },
+    {
+        "question_id": 1359,
+        "db_id": "student_club",
+        "Original SQL": "SELECT CAST(SUM(CASE WHEN T2.event_name = 'Yearly Kickoff' THEN T1.amount ELSE 0 END) AS REAL) / SUM(CASE WHEN T2.event_name = 'October Meeting' THEN T1.amount ELSE 0 END) FROM budget AS T1 INNER JOIN event AS T2 ON T1.link_to_event = T2.event_id WHERE T1.category = 'Advertisement' AND T2.type = 'Meeting'",
+        "Generated SQL": "SELECT COUNT(*)\nFROM budget\nWHERE budget.category = 'Advertisement'\nAND budget.event_status = 'Yearly Kickoff'\nAND budget.remaining > (SELECT budget.remaining\n                        FROM budget\n                        WHERE budget.category = 'October Meeting')"
+    },
+    {
+        "question_id": 1220,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT DISTINCT T1.ID, T1.SEX, T1.Birthday FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T2.UN = 29",
+        "Generated SQL": "SELECT ID, SEX, Birthday FROM Patient WHERE UN BETWEEN 0.5 AND 1.5"
+    },
+    {
+        "question_id": 688,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT COUNT(Id) FROM posts WHERE ViewCount > 35000 AND CommentCount = 0",
+        "Generated SQL": "SELECT COUNT(*)\nFROM posts\nWHERE viewcount > 35000\n  AND commentcount = 0"
+    },
+    {
+        "question_id": 150,
+        "db_id": "financial",
+        "Original SQL": "SELECT COUNT(T2.account_id) FROM district AS T1 INNER JOIN account AS T2 ON T1.district_id = T2.district_id INNER JOIN trans AS T3 ON T2.account_id = T3.account_id WHERE T3.bank = 'AB' AND T1.A3 = 'north Bohemia'",
+        "Generated SQL": "SELECT COUNT(*) FROM account\nJOIN trans ON account.account_id = trans.account_id\nJOIN district ON account.district_id = district.district_id\nWHERE district.A2 = 'North Bohemia' AND trans.bank = 'AB'"
+    },
+    {
+        "question_id": 1430,
+        "db_id": "student_club",
+        "Original SQL": "SELECT T1.last_name, T1.position FROM member AS T1 INNER JOIN expense AS T2 ON T1.member_id = T2.link_to_member WHERE T2.expense_date = '2019-09-10' AND T2.expense_description = 'Pizza'",
+        "Generated SQL": "SELECT last_name, position\nFROM member\nWHERE member_id IN (\n    SELECT link_to_member\n    FROM expense\n    WHERE expense_description = 'pizza'\n    AND expense_date = '09/10/2019'\n)"
+    },
+    {
+        "question_id": 731,
+        "db_id": "superhero",
+        "Original SQL": "SELECT COUNT(T1.id) FROM superhero AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.id WHERE T2.publisher_name = 'DC Comics'",
+        "Generated SQL": "SELECT COUNT(*) FROM superhero"
+    },
+    {
+        "question_id": 504,
+        "db_id": "card_games",
+        "Original SQL": "SELECT COUNT(id) FROM cards WHERE setCode IN ( SELECT code FROM sets WHERE name = 'World Championship Decks 2004' ) AND convertedManaCost = 3",
+        "Generated SQL": "SELECT COUNT(*) FROM cards\nWHERE setCode = 'WCD2004' AND convertedManaCost = 3"
+    },
+    {
+        "question_id": 593,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT COUNT(DISTINCT T1.Id) FROM badges AS T1 INNER JOIN users AS T2 ON T1.UserId = T2.Id WHERE T1.Name IN ('Supporter', 'Teacher') AND T2.Location = 'New York'",
+        "Generated SQL": "SELECT COUNT(*)\nFROM users\nWHERE Location = 'New York'\nAND EXISTS (\n  SELECT *\n  FROM badges\n  WHERE UserId = users.Id\n  AND Name IN ('Teacher', 'Supporter')\n)"
+    },
+    {
+        "question_id": 817,
+        "db_id": "superhero",
+        "Original SQL": "SELECT T3.race FROM superhero AS T1 INNER JOIN colour AS T2 ON T1.hair_colour_id = T2.id INNER JOIN race AS T3 ON T1.race_id = T3.id INNER JOIN gender AS T4 ON T1.gender_id = T4.id WHERE T2.colour = 'Blue' AND T4.gender = 'Male'",
+        "Generated SQL": "SELECT race.race FROM superhero\nINNER JOIN race ON superhero.race_id = race.id\nWHERE superhero.hair_colour_id = colour.id\nAND colour.colour = 'blue'\nAND superhero.gender_id = gender.id\nAND gender.gender ='male'"
+    },
+    {
+        "question_id": 1429,
+        "db_id": "student_club",
+        "Original SQL": "SELECT T2.event_name FROM attendance AS T1 INNER JOIN event AS T2 ON T2.event_id = T1.link_to_event INNER JOIN member AS T3 ON T1.link_to_member = T3.member_id WHERE T3.position = 'Vice President' AND T2.location = '900 E. Washington St.' AND T2.type = 'Social'",
+        "Generated SQL": "SELECT event_name FROM event\nWHERE event_id IN (SELECT link_to_event FROM attendance WHERE link_to_member = 'VP_Student_Club')"
+    },
+    {
+        "question_id": 11,
+        "db_id": "california_schools",
+        "Original SQL": "SELECT T2.CDSCode FROM schools AS T1 INNER JOIN frpm AS T2 ON T1.CDSCode = T2.CDSCode WHERE T2.`Enrollment (K-12)` + T2.`Enrollment (Ages 5-17)` > 500",
+        "Generated SQL": "SELECT CDSCode FROM schools WHERE Enrollment > 500"
+    },
+    {
+        "question_id": 1520,
+        "db_id": "debit_card_specializing",
+        "Original SQL": "SELECT T1.CustomerID, T2.Date, T2.Consumption FROM transactions_1k AS T1 INNER JOIN yearmonth AS T2 ON T1.CustomerID = T2.CustomerID WHERE T1.Date = '2012-08-24' AND T1.Price = 124.05 AND T2.Date = '201201'",
+        "Generated SQL": "SELECT\n  SUM(Price) AS TotalSpent,\n  Date AS Date,\n  Amount AS Amount\nFROM\n  transactions_1k\nWHERE\n  CustomerID = 124.05\n  AND Date BETWEEN '2012-01-01' AND '2012-01-31'\nGROUP BY\n  Date\nORDER BY\n  Date\nLIMIT 1"
+    },
+    {
+        "question_id": 712,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT T2.Id, T1.Text FROM comments AS T1 INNER JOIN posts AS T2 ON T1.PostId = T2.Id WHERE T2.Title = 'Group differences on a five point Likert item'",
+        "Generated SQL": "SELECT posts.Id, comments.Text\nFROM posts\nJOIN comments ON posts.Id = comments.PostId\nWHERE posts.Title = \"Group differences on a five point Likert item\""
+    },
+    {
+        "question_id": 1181,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT STRFTIME('%Y', T2.Date) - STRFTIME('%Y', T1.Birthday) FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T2.UA = 8.4 AND T2.Date = '1991-10-21'",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 1264,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT COUNT(DISTINCT T1.ID) FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T2.C4 > 10 AND T1.Diagnosis = 'APS'",
+        "Generated SQL": "SELECT COUNT(*) FROM Patient\nWHERE ID IN (\n  SELECT ID FROM Laboratory\n  WHERE C4 IS NOT NULL\n  GROUP BY ID\n  HAVING COUNT(*) > 0\n)\nAND ID IN (\n  SELECT ID FROM Examination\n  WHERE Thrombosis = 1\n)"
+    },
+    {
+        "question_id": 1008,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT T1.lap FROM pitStops AS T1 INNER JOIN drivers AS T2 on T1.driverId = T2.driverId INNER JOIN races AS T3 on T1.raceId = T3.raceId WHERE T2.forename = 'Lewis' AND T2.surname = 'Hamilton' AND T3.year = 2011 AND T3.name = 'Australian Grand Prix'",
+        "Generated SQL": "SELECT * FROM lapTimes\nWHERE driverId = (SELECT driverId FROM drivers WHERE surname = 'Hamilton')\nAND lap = (SELECT MAX(lap) FROM pitStops WHERE driverId = (SELECT driverId FROM drivers WHERE surname = 'Hamilton'))"
+    },
+    {
+        "question_id": 1440,
+        "db_id": "student_club",
+        "Original SQL": "SELECT DISTINCT T1.email FROM member AS T1 INNER JOIN expense AS T2 ON T1.member_id = T2.link_to_member WHERE date(SUBSTR(T2.expense_date, 1, 10)) BETWEEN '2019-09-10' AND '2019-11-19' AND T2.cost > 20",
+        "Generated SQL": "SELECT email\nFROM member\nWHERE member_id IN (\n  SELECT link_to_member\n  FROM income\n  WHERE amount > 20\n  AND date_received BETWEEN '2019-10-09' AND '2019-11-19'\n)"
+    },
+    {
+        "question_id": 184,
+        "db_id": "financial",
+        "Original SQL": "SELECT COUNT(T1.client_id) FROM client AS T1 INNER JOIN disp AS T2 ON T1.client_id = T2.client_id INNER JOIN card AS T3 ON T2.disp_id = T3.disp_id WHERE T1.gender = 'F' AND T3.type = 'junior'",
+        "Generated SQL": "SELECT COUNT(*)\nFROM client\nWHERE gender = 'F'\nAND card.type = 'junior'"
+    },
+    {
+        "question_id": 1074,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT t1.team_short_name FROM Team AS t1 INNER JOIN Match AS t2 ON t1.team_api_id = t2.home_team_api_id WHERE t2.home_team_goal = 10",
+        "Generated SQL": "SELECT team_short_name\nFROM Team\nWHERE team_api_id IN (\n    SELECT home_team_api_id\n    FROM Match\n    WHERE home_team_goal = 10\n)"
+    },
+    {
+        "question_id": 1037,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT CAST(COUNT(CASE WHEN t2.preferred_foot = 'left' THEN t1.id ELSE NULL END) AS REAL) * 100 / COUNT(t1.id) percent FROM Player AS t1 INNER JOIN Player_Attributes AS t2 ON t1.player_api_id = t2.player_api_id WHERE SUBSTR(t1.birthday, 1, 4) BETWEEN '1987' AND '1992'",
+        "Generated SQL": "SELECT COUNT(*) FROM Player_Attributes\nWHERE preferred_foot = 'Left' AND birthday BETWEEN '1987-01-01' AND '1992-12-31'"
+    },
+    {
+        "question_id": 1271,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT COUNT(DISTINCT T1.ID) FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T2.SSA IN ('negative', '0') AND STRFTIME('%Y', T2.Date) < '2000'",
+        "Generated SQL": "SELECT COUNT(*) FROM Patient\nWHERE SSA = 'Normal' AND First Date < '2000-01-01'"
+    },
+    {
+        "question_id": 992,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT forename, surname, url, dob FROM drivers WHERE nationality = 'German' AND STRFTIME('%Y', dob) BETWEEN '1971' AND '1985' ORDER BY dob DESC",
+        "Generated SQL": "SELECT surname, forename, dob, nationality, url\nFROM drivers\nWHERE nationality = 'German'\nAND dob BETWEEN '1971-01-01' AND '1985-12-31'\nORDER BY dob DESC"
+    },
+    {
+        "question_id": 1507,
+        "db_id": "debit_card_specializing",
+        "Original SQL": "SELECT DISTINCT T1.Time FROM transactions_1k AS T1 INNER JOIN gasstations AS T2 ON T1.GasStationID = T2.GasStationID WHERE T2.ChainID = 11",
+        "Generated SQL": "SELECT DISTINCT Time FROM transactions_1k WHERE GasStationID = 11"
+    },
+    {
+        "question_id": 1061,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT COUNT(id) FROM Player WHERE weight > 170 AND player_name LIKE 'Adam%'",
+        "Generated SQL": "SELECT COUNT(*) FROM Player WHERE player_name LIKE 'Adam%' AND weight > 170"
+    },
+    {
+        "question_id": 707,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT Text FROM comments WHERE PostId IN ( SELECT Id FROM posts WHERE ViewCount BETWEEN 100 AND 150 ) ORDER BY Score DESC LIMIT 1",
+        "Generated SQL": "SELECT *\nFROM comments\nWHERE PostId IN (\n  SELECT Id\n  FROM posts\n  WHERE ViewCount BETWEEN 100 AND 150\n)\nORDER BY Score DESC\nLIMIT 1"
+    },
+    {
+        "question_id": 1509,
+        "db_id": "debit_card_specializing",
+        "Original SQL": "SELECT COUNT(T1.TransactionID) FROM transactions_1k AS T1 INNER JOIN gasstations AS T2 ON T1.GasStationID = T2.GasStationID WHERE T2.Country = 'CZE' AND STRFTIME('%Y', T1.Date) >= '2012'",
+        "Generated SQL": "SELECT COUNT(*) FROM transactions_1k\nWHERE GasStationID IN (\n  SELECT GasStationID FROM gasstations\n  WHERE Country = 'Czech Republic'\n)\nAND Date > '2012-01-01'"
+    },
+    {
+        "question_id": 294,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT T1.bond_id FROM bond AS T1 INNER JOIN molecule AS T2 ON T1.molecule_id = T2.molecule_id WHERE T2.label = '+' AND T1.bond_type = '='",
+        "Generated SQL": "SELECT bond_id FROM bond WHERE bond_type = 'double' AND molecule_id = 'carcinogenic'"
+    },
+    {
+        "question_id": 476,
+        "db_id": "card_games",
+        "Original SQL": "SELECT T1.name FROM cards AS T1 INNER JOIN sets AS T2 ON T2.code = T1.setCode WHERE T2.name = 'Coldsnap' ORDER BY T1.convertedManaCost DESC LIMIT 1",
+        "Generated SQL": "SELECT name FROM cards WHERE setCode = 'COLD' ORDER BY convertedManaCost DESC LIMIT 1"
+    },
+    {
+        "question_id": 1279,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT COUNT(CASE WHEN T1.Diagnosis LIKE '%SLE%' THEN T1.ID ELSE 0 END) / COUNT(T1.ID) FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T2.`GOT` >= 60",
+        "Generated SQL": "SELECT (SELECT COUNT(*) FROM Patient WHERE Diagnosis = 'SLE') / (SELECT COUNT(*) FROM Patient) * 100"
+    },
+    {
+        "question_id": 288,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT T2.label AS flag_carcinogenic FROM atom AS T1 INNER JOIN molecule AS T2 ON T1.molecule_id = T2.molecule_id WHERE T1.atom_id = 'TR001_1'",
+        "Generated SQL": "SELECT * FROM molecule WHERE molecule_id = 'TR001_1'"
+    },
+    {
+        "question_id": 831,
+        "db_id": "superhero",
+        "Original SQL": "SELECT T2.colour FROM superhero AS T1 INNER JOIN colour AS T2 ON T1.eye_colour_id = T2.id WHERE T1.superhero_name = 'Abomination'",
+        "Generated SQL": "SELECT superhero.eye_colour_id\nFROM superhero\nWHERE superhero.superhero_name = 'Abomination'"
+    },
+    {
+        "question_id": 1050,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT t2.preferred_foot FROM Player AS t1 INNER JOIN Player_Attributes AS t2 ON t1.player_api_id = t2.player_api_id ORDER BY t1.birthday DESC LIMIT 1",
+        "Generated SQL": "SELECT Player.player_name, Player_Attributes.preferred_foot\nFROM Player\nJOIN Player_Attributes ON Player.player_fifa_api_id = Player_Attributes.player_fifa_api_id\nORDER BY Player_Attributes.birthday ASC\nLIMIT 1"
+    },
+    {
+        "question_id": 1347,
+        "db_id": "student_club",
+        "Original SQL": "SELECT T2.county FROM member AS T1 INNER JOIN zip_code AS T2 ON T1.zip = T2.zip_code WHERE T1.first_name = 'Adela' AND T1.last_name = 'O''Gallagher'",
+        "Generated SQL": "SELECT zip_code.county\nFROM member\nINNER JOIN zip_code ON member.zip = zip_code.zip_code\nWHERE member.first_name = \"Adela\" AND member.last_name = \"O'Gallagher\""
+    },
+    {
+        "question_id": 1453,
+        "db_id": "student_club",
+        "Original SQL": "SELECT T1.event_name FROM event AS T1 INNER JOIN budget AS T2 ON T1.event_id = T2.link_to_event INNER JOIN expense AS T3 ON T2.budget_id = T3.link_to_budget WHERE T2.category = 'Parking' AND T3.cost < (SELECT AVG(cost) FROM expense)",
+        "Generated SQL": "SELECT event_name FROM event WHERE cost < (SELECT AVG(cost) FROM event)"
+    },
+    {
+        "question_id": 287,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT CAST(COUNT(CASE WHEN T.bond_type = '=' THEN T.bond_id ELSE NULL END) AS REAL) * 100 / COUNT(T.bond_id) FROM bond AS T WHERE T.molecule_id = 'TR047'",
+        "Generated SQL": "SELECT\n  COUNT(*) AS num_double_bonds,\n  COUNT(*) / (SELECT COUNT(*) FROM molecule) AS percent_double_bonds\nFROM bond\nWHERE bond_type = 'double'"
+    },
+    {
+        "question_id": 31,
+        "db_id": "california_schools",
+        "Original SQL": "SELECT CAST(`Free Meal Count (K-12)` AS REAL) / `Enrollment (K-12)` FROM frpm ORDER BY `Enrollment (K-12)` DESC LIMIT 9, 2",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 1386,
+        "db_id": "student_club",
+        "Original SQL": "SELECT SUM(T3.cost) FROM event AS T1 INNER JOIN budget AS T2 ON T1.event_id = T2.link_to_event INNER JOIN expense AS T3 ON T2.budget_id = T3.link_to_budget WHERE T1.event_name = 'Yearly Kickoff'",
+        "Generated SQL": "SELECT SUM(cost)\nFROM expense\nWHERE link_to_budget = 'YK'"
+    },
+    {
+        "question_id": 281,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT DISTINCT T1.element FROM atom AS T1 INNER JOIN molecule AS T2 ON T1.molecule_id = T2.molecule_id WHERE T2.label = '+' AND SUBSTR(T1.atom_id, -1) = '4' AND LENGTH(T1.atom_id) = 7",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 980,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT T2.driverRef, T2.nationality, T2.dob FROM qualifying AS T1 INNER JOIN drivers AS T2 on T1.driverId = T2.driverId WHERE T1.raceId = 23 AND T1.q2 IS NOT NULL",
+        "Generated SQL": "SELECT drivers.driverRef, drivers.nationality, drivers.dob\nFROM drivers\nINNER JOIN qualifying ON drivers.driverId = qualifying.driverId\nWHERE qualifying.raceId = 23\nAND qualifying.q2 IS NOT NULL"
+    },
+    {
+        "question_id": 1068,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT CAST(SUM(t2.overall_rating) AS REAL) / COUNT(t2.id) FROM Player AS t1 INNER JOIN Player_Attributes AS t2 ON t1.player_api_id = t2.player_api_id WHERE t1.height > 170 AND STRFTIME('%Y',t2.`date`) >= '2010' AND STRFTIME('%Y',t2.`date`) <= '2015'",
+        "Generated SQL": "SELECT AVG(overall_rating)\nFROM Player_Attributes\nWHERE player_api_id IN (SELECT player_api_id\n                        FROM Player\n                        WHERE height > 170)\nAND date BETWEEN '2010-01-01' AND '2015-12-31'"
+    },
+    {
+        "question_id": 1174,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT AVG('1999'  - STRFTIME('%Y', T2.Birthday)) FROM Laboratory AS T1 INNER JOIN Patient AS T2 ON T1.ID = T2.ID WHERE T1.Date BETWEEN '1991-10-01' AND '1991-10-30'",
+        "Generated SQL": "SELECT AVG(Patient.Birthday)\nFROM Patient\nINNER JOIN Laboratory\nON Patient.ID = Laboratory.ID\nWHERE Laboratory.Date = '1991-10-01'\nAND Laboratory.Date < '1999-01-01'"
+    },
+    {
+        "question_id": 714,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT T1.Text FROM comments AS T1 INNER JOIN users AS T2 ON T1.UserId = T2.Id WHERE T2.DisplayName = 'Harvey Motulsky'",
+        "Generated SQL": "SELECT * FROM comments\nWHERE UserDisplayName = 'Harvey Motulsky'"
+    },
+    {
+        "question_id": 204,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT COUNT(T.molecule_id) FROM molecule AS T WHERE molecule_id BETWEEN 'TR000' AND 'TR099' AND T.label = '+'",
+        "Generated SQL": "SELECT COUNT(*) FROM molecule\nWHERE molecule_id IN (\n  SELECT molecule_id FROM connected\n  WHERE atom_id IN (\n    SELECT atom_id FROM atom\n    WHERE element = 'C'\n  )\n)"
+    },
+    {
+        "question_id": 702,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT COUNT(id) FROM posts WHERE Score < 20",
+        "Generated SQL": "SELECT COUNT(*) FROM posts WHERE score < 20"
+    },
+    {
+        "question_id": 124,
+        "db_id": "financial",
+        "Original SQL": "SELECT T3.loan_id, T2.A2, T2.A11 FROM account AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id INNER JOIN loan AS T3 ON T1.account_id = T3.account_id WHERE T3.duration = 60",
+        "Generated SQL": "SELECT loan_id, district.A2, AVG(loan.amount)\nFROM loan\nJOIN district ON district.district_id = loan.account_id\nWHERE duration = 60\nGROUP BY loan_id"
+    },
+    {
+        "question_id": 787,
+        "db_id": "superhero",
+        "Original SQL": "SELECT T2.race, T3.alignment FROM superhero AS T1 INNER JOIN race AS T2 ON T1.race_id = T2.id INNER JOIN alignment AS T3 ON T1.alignment_id = T3.id WHERE T1.superhero_name = 'Cameron Hicks'",
+        "Generated SQL": "SELECT race.race, alignment.alignment\nFROM superhero\nINNER JOIN race ON superhero.race_id = race.id\nINNER JOIN alignment ON superhero.alignment_id = alignment.id\nWHERE superhero.superhero_name = 'Cameron Hicks'"
+    },
+    {
+        "question_id": 517,
+        "db_id": "card_games",
+        "Original SQL": "SELECT COUNT(T1.id) FROM cards AS T1 INNER JOIN legalities AS T2 ON T2.uuid = T1.uuid WHERE T1.rarity = 'rare' AND T1.types = 'Enchantment' AND T1.name = 'Abundance' AND T2.status = 'Legal'",
+        "Generated SQL": "SELECT COUNT(*)\nFROM cards\nWHERE type = 'Enchantment'\nAND rarity = 'Rare'\nAND name = 'Abundance'\nAND (\n  SELECT COUNT(*)\n  FROM legalities\n  WHERE legalities.uuid = cards.uuid\n  AND legalities.status = 'Legal'\n) = 3"
+    },
+    {
+        "question_id": 245,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT CAST(COUNT(T2.bond_id) AS REAL) / COUNT(T1.atom_id) FROM atom AS T1 INNER JOIN connected AS T2 ON T1.atom_id = T2.atom_id WHERE T1.element = 'i'",
+        "Generated SQL": "SELECT AVG(bond_type)\nFROM bond\nJOIN atom ON atom.atom_id = bond.atom_id\nWHERE atom.element = 'Iodine'"
+    },
+    {
+        "question_id": 725,
+        "db_id": "superhero",
+        "Original SQL": "SELECT COUNT(T1.id) FROM superhero AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.id WHERE T2.publisher_name = 'Marvel Comics'",
+        "Generated SQL": "SELECT COUNT(*) FROM superhero WHERE publisher_id = 1"
+    },
+    {
+        "question_id": 1482,
+        "db_id": "debit_card_specializing",
+        "Original SQL": "SELECT CAST((SUM(IIF(T1.Segment = 'SME' AND T2.Date LIKE '2013%', T2.Consumption, 0)) - SUM(IIF(T1.Segment = 'SME' AND T2.Date LIKE '2012%', T2.Consumption, 0))) AS FLOAT) * 100 / SUM(IIF(T1.Segment = 'SME' AND T2.Date LIKE '2012%', T2.Consumption, 0)), CAST(SUM(IIF(T1.Segment = 'LAM' AND T2.Date LIKE '2013%', T2.Consumption, 0)) - SUM(IIF(T1.Segment = 'LAM' AND T2.Date LIKE '2012%', T2.Consumption, 0)) AS FLOAT) * 100 / SUM(IIF(T1.Segment = 'LAM' AND T2.Date LIKE '2012%', T2.Consumption, 0)) , CAST(SUM(IIF(T1.Segment = 'KAM' AND T2.Date LIKE '2013%', T2.Consumption, 0)) - SUM(IIF(T1.Segment = 'KAM' AND T2.Date LIKE '2012%', T2.Consumption, 0)) AS FLOAT) * 100 / SUM(IIF(T1.Segment = 'KAM' AND T2.Date LIKE '2012%', T2.Consumption, 0)) FROM customers AS T1 INNER JOIN yearmonth AS T2 ON T1.CustomerID = T2.CustomerID",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 833,
+        "db_id": "superhero",
+        "Original SQL": "SELECT superhero_name FROM superhero WHERE full_name = 'Charles Chandler'",
+        "Generated SQL": "SELECT superhero_name FROM superhero WHERE full_name = 'Charles Chandler'"
+    },
+    {
+        "question_id": 694,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT T3.Text, T1.DisplayName FROM users AS T1 INNER JOIN posts AS T2 ON T1.Id = T2.OwnerUserId INNER JOIN comments AS T3 ON T2.Id = T3.PostId WHERE T2.Title = 'Analysing wind data with R' ORDER BY T1.CreationDate DESC LIMIT 10",
+        "Generated SQL": "SELECT Text, UserDisplayName\nFROM comments\nWHERE PostId =\n  (SELECT Id\n   FROM posts\n   WHERE Title = 'Analysing wind data with R')\nORDER BY CreationDate DESC\nLIMIT 10"
+    },
+    {
+        "question_id": 1128,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT t1.name FROM Country AS t1 INNER JOIN Match AS t2 ON t1.id = t2.country_id INNER JOIN Player AS t3 ON t2.home_player_1 = t3.player_api_id GROUP BY t1.name ORDER BY AVG(t3.weight) DESC LIMIT 1",
+        "Generated SQL": "SELECT country.name, AVG(weight)\nFROM Player\nJOIN Country ON Player.country_id = Country.id\nGROUP BY country.name\nORDER BY AVG(weight) DESC\nLIMIT 1"
+    },
+    {
+        "question_id": 1334,
+        "db_id": "student_club",
+        "Original SQL": "SELECT T1.first_name, T1.last_name FROM member AS T1 INNER JOIN zip_code AS T2 ON T1.zip = T2.zip_code WHERE T2.state = 'Illinois'",
+        "Generated SQL": "SELECT first_name, last_name\nFROM member\nWHERE zip IN (SELECT zip_code FROM zip_code WHERE state = 'IL')"
+    },
+    {
+        "question_id": 774,
+        "db_id": "superhero",
+        "Original SQL": "SELECT T2.race FROM superhero AS T1 INNER JOIN race AS T2 ON T1.race_id = T2.id WHERE T1.superhero_name = 'A-Bomb'",
+        "Generated SQL": "SELECT publisher.publisher_name\nFROM superhero\nINNER JOIN publisher ON superhero.publisher_id = publisher.id\nWHERE superhero_name = 'A-Bomb'"
+    },
+    {
+        "question_id": 1445,
+        "db_id": "student_club",
+        "Original SQL": "SELECT first_name, last_name FROM member WHERE t_shirt_size = 'X-Large'",
+        "Generated SQL": "SELECT first_name, last_name\nFROM member\nWHERE t_shirt_size = 'extra large'"
+    },
+    {
+        "question_id": 1207,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT DISTINCT T1.SEX, T1.Birthday FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T2.GOT < 60 AND STRFTIME('%Y', T2.Date) = '1994'",
+        "Generated SQL": "SELECT SEX, BIRTHDAY FROM Patient WHERE ID IN (SELECT ID FROM Laboratory WHERE Date = 1994 AND GOT BETWEEN 0 AND 100)"
+    },
+    {
+        "question_id": 801,
+        "db_id": "superhero",
+        "Original SQL": "SELECT CAST(COUNT(CASE WHEN T2.gender = 'Male' THEN T1.id ELSE NULL END) AS REAL) / COUNT(CASE WHEN T2.gender = 'Female' THEN T1.id ELSE NULL END) FROM superhero AS T1 INNER JOIN gender AS T2 ON T1.gender_id = T2.id",
+        "Generated SQL": "SELECT\n  COUNT(CASE WHEN gender_id = 1 THEN 1 END) / COUNT(CASE WHEN gender_id = 2 THEN 1 END)\nFROM superhero"
+    },
+    {
+        "question_id": 1324,
+        "db_id": "student_club",
+        "Original SQL": "SELECT CAST(COUNT(T2.link_to_event) AS REAL) / COUNT(DISTINCT T2.link_to_event) FROM event AS T1 INNER JOIN attendance AS T2 ON T1.event_id = T2.link_to_event WHERE SUBSTR(T1.event_date, 1, 4) = '2020' AND T1.type = 'Meeting'",
+        "Generated SQL": "SELECT AVG(attendance.link_to_event)\nFROM attendance\nINNER JOIN event ON attendance.link_to_event = event.event_id\nWHERE event.event_date BETWEEN '2020-01-01' AND '2020-12-31'"
+    },
+    {
+        "question_id": 915,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT nationality FROM drivers WHERE dob IS NOT NULL ORDER BY dob ASC LIMIT 1",
+        "Generated SQL": "SELECT DISTINCT country FROM drivers ORDER BY dob ASC"
+    },
+    {
+        "question_id": 372,
+        "db_id": "card_games",
+        "Original SQL": "SELECT COUNT(id) FROM cards WHERE toughness = 99",
+        "Generated SQL": "SELECT COUNT(*) FROM cards WHERE toughness = 99"
+    },
+    {
+        "question_id": 118,
+        "db_id": "financial",
+        "Original SQL": "SELECT CAST(SUM(status = 'C') AS REAL) * 100 / COUNT(account_id) FROM loan WHERE amount < 100000",
+        "Generated SQL": "SELECT\n  100.0 * COUNT(*) / COUNT(DISTINCT account_id) AS percentage\nFROM\n  loan\nWHERE\n  amount < 100000\n  AND status = 'running'"
+    },
+    {
+        "question_id": 443,
+        "db_id": "card_games",
+        "Original SQL": "SELECT T2.setCode FROM sets AS T1 INNER JOIN set_translations AS T2 ON T2.setCode = T1.code WHERE T1.type = 'expansion' GROUP BY T2.setCode",
+        "Generated SQL": "SELECT code FROM sets WHERE type = 'expansion'"
+    },
+    {
+        "question_id": 1439,
+        "db_id": "student_club",
+        "Original SQL": "SELECT T1.phone FROM member AS T1 INNER JOIN major AS T2 ON T2.major_id = T1.link_to_major WHERE T2.major_name = 'Business' AND T2.college = 'College of Agriculture and Applied Sciences'",
+        "Generated SQL": "SELECT phone FROM member\nWHERE link_to_major = 'business'"
+    },
+    {
+        "question_id": 489,
+        "db_id": "card_games",
+        "Original SQL": "SELECT keyruneCode FROM sets WHERE code = 'PKHC'",
+        "Generated SQL": "SELECT keyruneCode FROM sets WHERE code = 'PKHC'"
+    },
+    {
+        "question_id": 1146,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT t2.team_long_name FROM Match AS t1 INNER JOIN Team AS t2 ON t1.away_team_api_id = t2.team_api_id ORDER BY t1.away_team_goal DESC LIMIT 1",
+        "Generated SQL": "SELECT team_long_name\nFROM Team\nWHERE team_api_id = (\n    SELECT away_team_api_id\n    FROM Match\n    WHERE away_team_goal = (\n        SELECT MAX(away_team_goal)\n        FROM Match\n    )\n)"
+    },
+    {
+        "question_id": 835,
+        "db_id": "superhero",
+        "Original SQL": "SELECT CAST(COUNT(CASE WHEN T3.alignment = 'Good' THEN T1.id ELSE NULL END) AS REAL) * 100 / COUNT(T1.id) FROM superhero AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.id INNER JOIN alignment AS T3 ON T1.alignment_id = T3.id WHERE T2.publisher_name = 'Marvel Comics'",
+        "Generated SQL": "SELECT\n  COUNT(*) AS total_superheroes,\n  COUNT(CASE WHEN alignment_id = 1 THEN 1 END) AS good_superheroes\nFROM superhero"
+    },
+    {
+        "question_id": 457,
+        "db_id": "card_games",
+        "Original SQL": "SELECT DISTINCT purchaseUrls FROM cards WHERE promoTypes = 'bundle'",
+        "Generated SQL": "SELECT * FROM cards WHERE promoTypes = \"bundle\""
+    },
+    {
+        "question_id": 155,
+        "db_id": "financial",
+        "Original SQL": "SELECT CAST(SUM(type = 'gold' AND STRFTIME('%Y', issued) < '1998') AS REAL) * 100 / COUNT(card_id) FROM card",
+        "Generated SQL": "SELECT\n  COUNT(*) / COUNT(DISTINCT card.card_id)\nFROM card\nWHERE card.issued < '1998-01-01'\nAND card.type = 'Gold'"
+    },
+    {
+        "question_id": 1417,
+        "db_id": "student_club",
+        "Original SQL": "SELECT T1.type FROM event AS T1 INNER JOIN budget AS T2 ON T1.event_id = T2.link_to_event WHERE T2.remaining > 30",
+        "Generated SQL": "SELECT event.event_name, budget.category, budget.remaining\nFROM event\nJOIN budget ON event.event_id = budget.link_to_event\nWHERE budget.remaining > 30"
+    },
+    {
+        "question_id": 1343,
+        "db_id": "student_club",
+        "Original SQL": "SELECT remaining FROM budget WHERE category = 'Food' AND amount = ( SELECT MAX(amount) FROM budget WHERE category = 'Food' )",
+        "Generated SQL": "SELECT budget.remaining\nFROM budget\nWHERE budget.category = \"Food\"\nORDER BY budget.remaining DESC\nLIMIT 1"
+    },
+    {
+        "question_id": 1275,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT COUNT(DISTINCT T1.ID) FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T2.CENTROMEA IN ('negative', '0') AND T2.SSB IN ('negative', '0') AND T1.SEX = 'M'",
+        "Generated SQL": "SELECT COUNT(*) FROM Patient\nWHERE SEX = 'M' AND C3 = 'Normal' AND SSB = 'Normal'"
+    },
+    {
+        "question_id": 1261,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT COUNT(DISTINCT T1.ID) FROM Examination AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T2.RF < 20 AND T1.Thrombosis = 0",
+        "Generated SQL": "SELECT COUNT(*) FROM Patient\nWHERE RF = 'Normal' AND Thrombosis = 0"
+    },
+    {
+        "question_id": 417,
+        "db_id": "card_games",
+        "Original SQL": "SELECT CAST(SUM(CASE WHEN T2.language = 'Japanese' THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(T1.id) FROM sets AS T1 INNER JOIN set_translations AS T2 ON T1.code = T2.setCode WHERE T1.type = 'expansion'",
+        "Generated SQL": "SELECT\n  COUNT(*) / (SELECT COUNT(*) FROM set_translations WHERE language = 'ja')\nFROM\n  sets\nWHERE\n  code IN (SELECT setCode FROM set_translations WHERE language = 'ja')\nAND\n  type = 'expansion'"
+    },
+    {
+        "question_id": 911,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT name FROM circuits WHERE name IN ('Silverstone Circuit', 'Hockenheimring', 'Hungaroring') ORDER BY lat DESC LIMIT 1",
+        "Generated SQL": "SELECT name, lat FROM circuits\nORDER BY lat DESC\nLIMIT 1"
+    },
+    {
+        "question_id": 1332,
+        "db_id": "student_club",
+        "Original SQL": "SELECT T2.spent FROM event AS T1 INNER JOIN budget AS T2 ON T1.event_id = T2.link_to_event WHERE T1.event_name = 'September Meeting' AND T2.category = 'Food' AND SUBSTR(T1.event_date, 6, 2) = '09'",
+        "Generated SQL": "SELECT SUM(cost)\nFROM expense\nWHERE link_to_budget = 'food'\nAND expense_date BETWEEN '09/01/2020' AND '09/30/2020'"
+    },
+    {
+        "question_id": 1231,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT COUNT(DISTINCT T1.ID) FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE STRFTIME('%Y', T1.Birthday) BETWEEN '1936' AND '1956' AND T1.SEX = 'M' AND T2.CPK >= 250",
+        "Generated SQL": "SELECT COUNT(*) FROM Patient\nWHERE SEX = 'M' AND Birthday BETWEEN '1936-01-01' AND '1956-01-01'\nAND C3 > 0"
+    },
+    {
+        "question_id": 886,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT year FROM races GROUP BY year ORDER BY COUNT(round) DESC LIMIT 1",
+        "Generated SQL": "SELECT year FROM seasons GROUP BY year ORDER BY COUNT(*) DESC LIMIT 1"
+    },
+    {
+        "question_id": 824,
+        "db_id": "superhero",
+        "Original SQL": "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN hero_power AS T2 ON T1.id = T2.hero_id INNER JOIN superpower AS T3 ON T2.power_id = T3.id WHERE T3.power_name = 'Wind Control' ORDER BY T1.superhero_name",
+        "Generated SQL": "SELECT superhero_name\nFROM superhero\nWHERE power_id IN (\n  SELECT id\n  FROM superpower\n  WHERE power_name = 'wind control'\n)\nORDER BY superhero_name"
+    },
+    {
+        "question_id": 379,
+        "db_id": "card_games",
+        "Original SQL": "SELECT id FROM cards WHERE duelDeck = 'a'",
+        "Generated SQL": "SELECT cards.id FROM cards WHERE cards.duelDeck = 'a'"
+    },
+    {
+        "question_id": 679,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT T1.Id, T2.Title FROM users AS T1 INNER JOIN posts AS T2 ON T1.Id = T2.OwnerUserId ORDER BY T2.Score DESC LIMIT 1",
+        "Generated SQL": "SELECT posts.Id, posts.Title\nFROM posts\nORDER BY posts.Score DESC\nLIMIT 1"
+    },
+    {
+        "question_id": 133,
+        "db_id": "financial",
+        "Original SQL": "SELECT district_id, A2 FROM district ORDER BY A13 DESC LIMIT 1",
+        "Generated SQL": "SELECT A2, A3\nFROM district\nWHERE A10 = (SELECT MAX(A10) FROM district)"
+    },
+    {
+        "question_id": 277,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT T1.element FROM atom AS T1 INNER JOIN connected AS T2 ON T1.atom_id = T2.atom_id WHERE T2.bond_id = 'TR000_1_2'",
+        "Generated SQL": "SELECT element FROM atom\nJOIN connected ON atom.atom_id = connected.atom_id\nJOIN bond ON connected.bond_id = bond.bond_id\nWHERE bond.bond_id = 'TR000_1_2'"
+    },
+    {
+        "question_id": 360,
+        "db_id": "card_games",
+        "Original SQL": "SELECT language FROM set_translations WHERE id IN ( SELECT id FROM cards WHERE name = 'Angel of Mercy' )",
+        "Generated SQL": "SELECT DISTINCT language FROM set_translations WHERE setCode = (SELECT setCode FROM cards WHERE name = 'Angel of Mercy')"
+    },
+    {
+        "question_id": 526,
+        "db_id": "card_games",
+        "Original SQL": "SELECT COUNT(id) FROM cards WHERE artist = 'Matthew D. Wilson' AND availability = 'paper'",
+        "Generated SQL": "SELECT COUNT(*) FROM cards WHERE artist = '<NAME>'"
+    },
+    {
+        "question_id": 888,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT T1.country, T1.location FROM circuits AS T1 INNER JOIN races AS T2 ON T2.circuitID = T1.circuitId WHERE T2.name = 'European Grand Prix' ORDER BY T2.year ASC LIMIT 1",
+        "Generated SQL": "SELECT country, name, location\nFROM circuits\nWHERE country = 'France'"
+    },
+    {
+        "question_id": 698,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT CommentCount, AnswerCount FROM posts WHERE Title = 'Clustering 1D data'",
+        "Generated SQL": "SELECT"
+    },
+    {
+        "question_id": 396,
+        "db_id": "card_games",
+        "Original SQL": "SELECT COUNT(id) FROM cards WHERE frameVersion = 1993 AND availability = 'paper' AND hasContentWarning = 1",
+        "Generated SQL": "SELECT COUNT(*) FROM cards\nWHERE frameVersion = '1993'\nAND availability = 'Paper'"
+    },
+    {
+        "question_id": 649,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT T1.Id, T2.LastEditDate FROM postHistory AS T1 INNER JOIN posts AS T2 ON T1.PostId = T2.Id WHERE T2.Title = 'What is the best introductory Bayesian statistics textbook?'",
+        "Generated SQL": "SELECT\n  COUNT(*) AS [PostHistoryCount],\n  MAX(LastEditDate) AS [LastEditDate]\nFROM posts\nWHERE Title = 'What is the best introductory Bayesian statistics textbook?'"
+    },
+    {
+        "question_id": 814,
+        "db_id": "superhero",
+        "Original SQL": "SELECT DISTINCT T2.colour FROM superhero AS T1 INNER JOIN colour AS T2 ON T1.skin_colour_id = T2.id INNER JOIN hero_attribute AS T3 ON T1.id = T3.hero_id WHERE T3.attribute_value = 100",
+        "Generated SQL": "SELECT superhero.skin_colour_id\nFROM superhero\nINNER JOIN hero_attribute ON superhero.id = hero_attribute.hero_id\nINNER JOIN attribute ON hero_attribute.attribute_id = attribute.id\nWHERE attribute.attribute_name = '100'"
+    },
+    {
+        "question_id": 1206,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT Date FROM Laboratory WHERE ID = 48473 AND GOT >= 60",
+        "Generated SQL": "SELECT * FROM Laboratory WHERE ID = '48473' AND GOT >?"
+    },
+    {
+        "question_id": 918,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT driverRef FROM drivers WHERE forename = 'Lewis' AND surname = 'Hamilton'",
+        "Generated SQL": "SELECT name FROM drivers WHERE driverRef = 'hamilton_lewis'"
+    },
+    {
+        "question_id": 877,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT T1.forename, T1.surname FROM drivers AS T1 INNER JOIN results AS T2 ON T2.driverId = T1.driverId WHERE T2.raceId = 872 AND T2.time IS NOT NULL ORDER BY T1.dob DESC LIMIT 1",
+        "Generated SQL": "SELECT MIN(dob) FROM drivers WHERE driverId IN (SELECT driverId FROM results WHERE raceId = 872)"
+    },
+    {
+        "question_id": 1154,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT T1.SEX, T1.Birthday, T2.`Examination Date`, T2.Symptoms FROM Patient AS T1 INNER JOIN Examination AS T2 ON T1.ID = T2.ID WHERE T1.ID = 163109",
+        "Generated SQL": "SELECT SEX, Birthday FROM Patient WHERE ID = 163109;\nSELECT Examination Date, Symptoms FROM Examination WHERE ID = 163109"
+    },
+    {
+        "question_id": 243,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT T2.bond_id FROM atom AS T1 INNER JOIN connected AS T2 ON T1.atom_id = T2.atom_id WHERE T2.bond_id IN ( SELECT T3.bond_id FROM connected AS T3 INNER JOIN atom AS T4 ON T3.atom_id = T4.atom_id WHERE T4.element = 'p' ) AND T1.element = 'n'",
+        "Generated SQL": "SELECT *\nFROM bond\nWHERE bond.bond_type IN (\n  SELECT bond.bond_type\n  FROM bond\n  JOIN atom ON atom.atom_id = bond.atom_id\n  JOIN atom ON atom.atom_id = bond.atom_id2\n  WHERE atom.element = 'P' AND atom.element = 'N'\n)"
+    },
+    {
+        "question_id": 786,
+        "db_id": "superhero",
+        "Original SQL": "SELECT COUNT(T1.hero_id) FROM hero_attribute AS T1 INNER JOIN attribute AS T2 ON T1.attribute_id = T2.id WHERE T2.attribute_name = 'Strength' AND T1.attribute_value = ( SELECT MAX(attribute_value) FROM hero_attribute )",
+        "Generated SQL": "SELECT COUNT(*) FROM superhero\nWHERE id IN (\n  SELECT hero_id FROM hero_attribute\n  WHERE attribute_id = (\n    SELECT id FROM attribute WHERE attribute_name ='strength'\n  )\n  ORDER BY attribute_value DESC\n  LIMIT 1\n)"
+    },
+    {
+        "question_id": 600,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT T1.ViewCount FROM posts AS T1 INNER JOIN postLinks AS T2 ON T1.Id = T2.PostId WHERE T2.PostId = 61217",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 319,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT COUNT(DISTINCT T1.element) FROM atom AS T1 INNER JOIN connected AS T2 ON T1.atom_id = T2.atom_id WHERE T2.bond_id = 'TR001_3_4'",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 1333,
+        "db_id": "student_club",
+        "Original SQL": "SELECT T2.city, T2.state FROM member AS T1 INNER JOIN zip_code AS T2 ON T1.zip = T2.zip_code WHERE T1.position = 'President'",
+        "Generated SQL": "SELECT city, state\nFROM zip_code\nWHERE zip_code = (SELECT zip\n                  FROM member\n                  WHERE member.position = 'President'\n                  LIMIT 1)"
+    },
+    {
+        "question_id": 332,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT COUNT(DISTINCT T.molecule_id) FROM bond AS T WHERE T.molecule_id BETWEEN 'TR004' AND 'TR010' AND T.bond_type = '-'",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 1384,
+        "db_id": "student_club",
+        "Original SQL": "SELECT T2.amount FROM member AS T1 INNER JOIN income AS T2 ON T1.member_id = T2.link_to_member WHERE T1.first_name = 'Grant' AND T1.last_name = 'Gilmour'",
+        "Generated SQL": "SELECT COUNT(income_id)\nFROM income\nWHERE link_to_member = 'grant_gilmour'"
+    },
+    {
+        "question_id": 1477,
+        "db_id": "debit_card_specializing",
+        "Original SQL": "SELECT SUBSTRING(T2.Date, 1, 4) FROM customers AS T1 INNER JOIN yearmonth AS T2 ON T1.CustomerID = T2.CustomerID WHERE T1.Currency = 'EUR' GROUP BY SUBSTRING(T2.Date, 1, 4) ORDER BY SUM(T2.Consumption) DESC LIMIT 1",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 614,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT CAST(COUNT(T1.Id) AS REAL) * 100 / (SELECT COUNT(Id) FROM users) FROM users AS T1 INNER JOIN badges AS T2 ON T1.Id = T2.UserId WHERE T2.Name = 'Teacher'",
+        "Generated SQL": "SELECT\n  DisplayName,\n  COUNT(*) AS Count,\n  COUNT(*) / (SELECT COUNT(*) FROM users) * 100 AS Percentage\nFROM users\nJOIN badges ON users.Id = badges.UserId\nWHERE Name = 'Teacher'\nGROUP BY DisplayName\nORDER BY Percentage DESC"
+    },
+    {
+        "question_id": 196,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT COUNT(DISTINCT T1.molecule_id) FROM molecule AS T1 INNER JOIN atom AS T2 ON T1.molecule_id = T2.molecule_id WHERE T2.element = 'cl' AND T1.label = '-'",
+        "Generated SQL": "SELECT\n  COUNT(*)\nFROM\n  atom\nWHERE\n  element = 'Cl'"
+    },
+    {
+        "question_id": 1089,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT COUNT(t2.id) FROM Country AS t1 INNER JOIN Match AS t2 ON t1.id = t2.country_id WHERE t1.name = 'Belgium' AND t2.season = '2008/2009'",
+        "Generated SQL": "SELECT COUNT(*) FROM Match\nWHERE season = '2008/2009' AND country_id = 1"
+    },
+    {
+        "question_id": 1150,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT CAST(SUM(CASE WHEN STRFTIME('%Y', Birthday) > '1930' THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(*) FROM Patient WHERE SEX = 'F'",
+        "Generated SQL": "SELECT COUNT(*) FROM Patient WHERE SEX = 'F' AND Birthday > '1930-01-01';\nSELECT COUNT(*) FROM Patient WHERE SEX = 'F';\nSELECT COUNT(*) FROM Patient WHERE Birthday > '1930-01-01';\nSELECT COUNT(*) FROM Patient WHERE SEX = 'F' AND Birthday > '1930-01-01' / (SELECT COUNT(*) FROM Patient WHERE SEX = 'F')"
+    },
+    {
+        "question_id": 323,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT label FROM molecule AS T WHERE T.molecule_id = 'TR000'",
+        "Generated SQL": "SELECT * FROM molecule WHERE molecule_id = 'TR000'"
+    },
+    {
+        "question_id": 516,
+        "db_id": "card_games",
+        "Original SQL": "SELECT COUNT(T3.id) FROM ( SELECT T1.id FROM cards AS T1 INNER JOIN foreign_data AS T2 ON T2.uuid = T1.uuid WHERE T1.artist = 'Volkan Ba\u01f5a' AND T2.language = 'French' GROUP BY T1.id ) AS T3",
+        "Generated SQL": "SELECT COUNT(*) FROM cards\nWHERE uuid IN (\n  SELECT uuid FROM foreign_data\n  WHERE language = 'French'\n)"
+    },
+    {
+        "question_id": 1043,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT team_short_name FROM Team WHERE team_long_name = 'Queens Park Rangers'",
+        "Generated SQL": "SELECT team_short_name\nFROM Team\nWHERE team_long_name = 'Queens Park Rangers'"
+    },
+    {
+        "question_id": 908,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT T3.lap, T2.name, T2.year, T1.location FROM circuits AS T1 INNER JOIN races AS T2 ON T1.circuitId = T2.circuitId INNER JOIN lapTimes AS T3 ON T3.raceId = T2.raceId ORDER BY T3.lap DESC LIMIT 1",
+        "Generated SQL": "SELECT MAX(laps) AS max_laps, name, year, location\nFROM races\nJOIN circuits ON races.circuitId = circuits.circuitId\nGROUP BY year, location\nORDER BY max_laps DESC\nLIMIT 1"
+    },
+    {
+        "question_id": 211,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT DISTINCT T1.atom_id FROM atom AS T1 INNER JOIN molecule AS T2 ON T1.molecule_id = T2.molecule_id INNER JOIN connected AS T3 ON T1.atom_id = T3.atom_id WHERE T2.label = '-'",
+        "Generated SQL": "SELECT atom_id\nFROM atom\nWHERE atom_id IN (\n  SELECT atom_id2\n  FROM connected\n  WHERE bond_id IN (\n    SELECT bond_id\n    FROM bond\n    WHERE bond_type = 'non-carcinogenic'\n  )\n)"
+    },
+    {
+        "question_id": 928,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT T3.forename, T3.surname, T3.driverRef FROM races AS T1 INNER JOIN results AS T2 ON T2.raceId = T1.raceId INNER JOIN drivers AS T3 ON T3.driverId = T2.driverId WHERE T1.name = 'Canadian Grand Prix' AND T2.rank = 1 AND T1.year = 2007",
+        "Generated SQL": "SELECT driverRef\nFROM drivers\nWHERE driverId IN (\n  SELECT driverId\n  FROM results\n  WHERE raceId IN (\n    SELECT raceId\n    FROM races\n    WHERE name = 'Canadian Grand Prix'\n    AND year = 2007\n  )\n  ORDER BY position ASC\n  LIMIT 1\n)"
+    },
+    {
+        "question_id": 644,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT LastEditDate, LastEditorUserId FROM posts WHERE Title = 'Detecting a given face in a database of facial images'",
+        "Generated SQL": "SELECT LastEditDate, LastEditorUserId\nFROM posts\nWHERE Title = 'Detecting a given face in a database of facial images'"
+    },
+    {
+        "question_id": 769,
+        "db_id": "superhero",
+        "Original SQL": "SELECT T1.superhero_name FROM superhero AS T1 INNER JOIN hero_attribute AS T2 ON T1.id = T2.hero_id INNER JOIN attribute AS T3 ON T3.id = T2.attribute_id INNER JOIN publisher AS T4 ON T4.id = T1.publisher_id WHERE T4.publisher_name = 'Dark Horse Comics' AND T3.attribute_name = 'Durability' ORDER BY T2.attribute_value DESC LIMIT 1",
+        "Generated SQL": "SELECT superhero_name\nFROM superhero\nINNER JOIN publisher ON superhero.publisher_id = publisher.id\nWHERE publisher_name = 'Dark Horse Comics'\nGROUP BY superhero_name\nORDER BY MAX(weight_kg) DESC\nLIMIT 1"
+    },
+    {
+        "question_id": 255,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT ROUND(CAST(COUNT(CASE WHEN T2.label = '+' THEN T1.bond_id ELSE NULL END) AS REAL) * 100 / COUNT(T1.bond_id),5) FROM bond AS T1 INNER JOIN molecule AS T2 ON T1.molecule_id = T2.molecule_id WHERE T1.bond_type = '-'",
+        "Generated SQL": "SELECT\n  COUNT(*) / (SELECT COUNT(*) FROM bond)\nFROM bond\nWHERE bond_type ='single'"
+    },
+    {
+        "question_id": 168,
+        "db_id": "financial",
+        "Original SQL": "SELECT CAST(SUM(T2.gender = 'F') AS REAL) * 100 / COUNT(T2.client_id) FROM district AS T1 INNER JOIN client AS T2 ON T1.district_id = T2.district_id WHERE T1.A11 > 10000",
+        "Generated SQL": "SELECT\n  COUNT(*) /\n  (SELECT COUNT(*) FROM client WHERE district_id = (SELECT district_id FROM district WHERE A10 > 10000))\nFROM client\nWHERE district_id = (SELECT district_id FROM district WHERE A10 > 10000)\n  AND gender = 'F'"
+    },
+    {
+        "question_id": 605,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT COUNT(id) FROM badges WHERE Name = 'Announcer'",
+        "Generated SQL": "SELECT COUNT(*) FROM users\nWHERE Id IN (\n  SELECT UserId FROM badges\n  WHERE Name = 'Announcer'\n)"
+    },
+    {
+        "question_id": 1409,
+        "db_id": "student_club",
+        "Original SQL": "SELECT SUM(cost) FROM expense WHERE expense_date = '2019-08-20'",
+        "Generated SQL": "SELECT SUM(cost)\nFROM expense\nWHERE expense_date = '8/20/2019'"
+    },
+    {
+        "question_id": 206,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT DISTINCT T1.element FROM atom AS T1 INNER JOIN connected AS T2 ON T1.atom_id = T2.atom_id WHERE T2.bond_id = 'TR004_8_9'",
+        "Generated SQL": "SELECT element FROM atom\nWHERE atom_id IN (\n  SELECT atom_id2 FROM connected\n  WHERE bond_id = 'TR004_8_9'\n)"
+    },
+    {
+        "question_id": 1258,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT COUNT(DISTINCT T1.ID) FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID INNER JOIN Examination AS T3 ON T3.ID = T2.ID WHERE (T2.RA = '-' OR T2.RA = '+-') AND T3.KCT = '+'",
+        "Generated SQL": "SELECT COUNT(*) FROM Patient\nWHERE Rhuematoid Factor = 'Positive'\nAND Degree of Coagulation = 'Positive'"
+    },
+    {
+        "question_id": 112,
+        "db_id": "financial",
+        "Original SQL": "SELECT T1.A2 FROM district AS T1 INNER JOIN client AS T2 ON T1.district_id = T2.district_id WHERE T2.birth_date = '1976-01-29' AND T2.gender = 'F'",
+        "Generated SQL": "SELECT district_id\nFROM client\nWHERE gender = 'F'\n  AND birth_date = '1976-01-29'"
+    },
+    {
+        "question_id": 1066,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT DISTINCT t2.buildUpPlayPassingClass FROM Team AS t1 INNER JOIN Team_Attributes AS t2 ON t1.team_api_id = t2.team_api_id WHERE t1.team_short_name = 'CLB'",
+        "Generated SQL": "SELECT team_short_name, buildUpPlayPassingClass\nFROM Team_Attributes\nINNER JOIN Team\nON Team_Attributes.team_api_id = Team.team_api_id\nWHERE team_short_name = 'CLB'"
+    },
+    {
+        "question_id": 951,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT COUNT(T1.raceId) FROM constructorStandings AS T1 INNER JOIN constructors AS T2 on T1.constructorId = T2.constructorId WHERE T1.points = 0 AND T2.nationality = 'Japanese' GROUP BY T1.constructorId HAVING COUNT(raceId) = 2",
+        "Generated SQL": "SELECT COUNT(*)\nFROM constructors\nWHERE nationality = 'Japan'\nAND constructorId IN (\n  SELECT constructorId\n  FROM constructorStandings\n  WHERE points = 0\n  AND raceId IN (\n    SELECT raceId\n    FROM races\n    WHERE year = 2019\n    AND round = 1\n  )\n)"
+    },
+    {
+        "question_id": 898,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT STRFTIME('%Y', CURRENT_TIMESTAMP) - STRFTIME('%Y', dob), forename , surname FROM drivers WHERE nationality = 'Japanese' ORDER BY dob DESC LIMIT 1",
+        "Generated SQL": "SELECT\n  MIN(dob) AS youngest,\n  surname\nFROM\n  drivers\nWHERE\n  nationality = 'Japan'\nGROUP BY\n  surname\nORDER BY\n  youngest\nLIMIT 1"
+    },
+    {
+        "question_id": 864,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT COUNT(T2.driverId) FROM races AS T1 INNER JOIN results AS T2 ON T2.raceId = T1.raceId WHERE T1.date = '2015-11-29' AND T2.time IS NOT NULL",
+        "Generated SQL": "SELECT COUNT(DISTINCT driverId)\nFROM results\nWHERE raceId = (SELECT raceId FROM races WHERE date = '2015-11-29')"
+    },
+    {
+        "question_id": 459,
+        "db_id": "card_games",
+        "Original SQL": "SELECT name FROM cards WHERE name IN ('Serra Angel', 'Shrine Keeper') ORDER BY convertedManaCost DESC LIMIT 1",
+        "Generated SQL": "SELECT cards.name, cards.convertedManaCost\nFROM cards\nWHERE cards.name IN (\"Serra Angel\", \"Shrine Keeper\")\nORDER BY cards.convertedManaCost DESC"
+    },
+    {
+        "question_id": 386,
+        "db_id": "card_games",
+        "Original SQL": "SELECT COUNT(T1.id) FROM cards AS T1 INNER JOIN legalities AS T2 ON T1.uuid = T2.uuid WHERE T1.frameVersion = 'future'",
+        "Generated SQL": "SELECT cards.name, cards.frameVersion, legalities.status\nFROM cards\nJOIN legalities ON cards.uuid = legalities.uuid\nWHERE cards.frameVersion = 'future'"
+    },
+    {
+        "question_id": 1162,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT COUNT(*) FROM Patient WHERE STRFTIME('%Y', Description) = '1997' AND SEX = 'F' AND Admission = '-'",
+        "Generated SQL": "SELECT COUNT(*) FROM Patient\nWHERE SEX = 'F' AND Description = '1997-01-01' AND FirstDate = '1997-01-01'"
+    },
+    {
+        "question_id": 1421,
+        "db_id": "student_club",
+        "Original SQL": "SELECT CAST(SUM(CASE WHEN T2.major_name = 'Business' THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(T1.member_id) FROM member AS T1 INNER JOIN major AS T2 ON T2.major_id = T1.link_to_major WHERE T1.position = 'Member'",
+        "Generated SQL": "SELECT (SELECT COUNT(*) FROM member WHERE major_id = 'Business') / (SELECT COUNT(*) FROM member) * 100"
+    },
+    {
+        "question_id": 762,
+        "db_id": "superhero",
+        "Original SQL": "SELECT T2.power_name FROM hero_power AS T1 INNER JOIN superpower AS T2 ON T1.power_id = T2.id GROUP BY T2.power_name ORDER BY COUNT(T1.hero_id) DESC LIMIT 1",
+        "Generated SQL": "SELECT power_name\nFROM superpower\nJOIN hero_power ON superpower.id = hero_power.power_id\nGROUP BY power_name\nORDER BY COUNT(*) DESC\nLIMIT 1"
+    },
+    {
+        "question_id": 525,
+        "db_id": "card_games",
+        "Original SQL": "SELECT uuid FROM legalities WHERE format = 'oldschool' AND (status = 'Banned' OR status = 'Restricted')",
+        "Generated SQL": "SELECT uuid FROM cards\nWHERE uuid IN (\n    SELECT uuid FROM legalities\n    WHERE format = 'old_school'\n    AND status = 'banned'\n)"
+    },
+    {
+        "question_id": 30,
+        "db_id": "california_schools",
+        "Original SQL": "SELECT T2.City FROM frpm AS T1 INNER JOIN schools AS T2 ON T1.CDSCode = T2.CDSCode GROUP BY T2.City ORDER BY SUM(T1.`Enrollment (K-12)`) ASC LIMIT 5",
+        "Generated SQL": "SELECT DISTINCT City\nFROM schools\nWHERE Latitude IS NOT NULL\nORDER BY Enrollment (K-12)\nLIMIT 5"
+    },
+    {
+        "question_id": 285,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT T1.element FROM atom AS T1 INNER JOIN connected AS T2 ON T1.atom_id = T2.atom_id INNER JOIN bond AS T3 ON T2.bond_id = T3.bond_id WHERE T3.bond_id = 'TR001_10_11'",
+        "Generated SQL": "SELECT element FROM atom\nWHERE atom_id IN (\n  SELECT atom_id2 FROM connected\n  WHERE bond_id IN (\n    SELECT bond_id FROM bond\n    WHERE bond_type ='single'\n  )\n)"
+    },
+    {
+        "question_id": 361,
+        "db_id": "card_games",
+        "Original SQL": "SELECT COUNT(DISTINCT T1.id) FROM cards AS T1 INNER JOIN legalities AS T2 ON T1.uuid = T2.uuid WHERE T2.status = 'Restricted' AND T1.isTextless = 0",
+        "Generated SQL": "SELECT COUNT(*) FROM legalities\nJOIN cards ON legalities.uuid = cards.uuid\nJOIN rulings ON cards.uuid = rulings.uuid\nWHERE legalities.status ='restricted'\nAND rulings.text IS NOT NULL"
+    },
+    {
+        "question_id": 1519,
+        "db_id": "debit_card_specializing",
+        "Original SQL": "SELECT T1.ProductID FROM transactions_1k AS T1 INNER JOIN gasstations AS T2 ON T1.GasStationID = T2.GasStationID WHERE T1.Date = '2012-08-23' AND T1.Time = '21:20:00'",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 228,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT ROUND(CAST(COUNT(CASE WHEN T.element = 'h' THEN T.atom_id ELSE NULL END) AS REAL) * 100 / COUNT(T.atom_id),4) FROM atom AS T WHERE T.molecule_id = 'TR206'",
+        "Generated SQL": "SELECT 100.0 * (SELECT COUNT(*) FROM atom WHERE element = 'H') / (SELECT COUNT(*) FROM atom)"
+    },
+    {
+        "question_id": 414,
+        "db_id": "card_games",
+        "Original SQL": "SELECT T2.language FROM sets AS T1 INNER JOIN set_translations AS T2 ON T1.code = T2.setCode WHERE T1.block = 'Ravnica' AND T1.baseSetSize = 180",
+        "Generated SQL": "SELECT set_translations.language\nFROM sets\nINNER JOIN set_translations ON sets.code = set_translations.setCode\nWHERE sets.block = 'Ravnica'"
+    },
+    {
+        "question_id": 58,
+        "db_id": "california_schools",
+        "Original SQL": "SELECT Phone, Ext, School FROM schools WHERE Zip = '95203-3704'",
+        "Generated SQL": "SELECT Phone, Ext, Schools.School\nFROM Schools\nWHERE Zip = 95203-3704"
+    },
+    {
+        "question_id": 798,
+        "db_id": "superhero",
+        "Original SQL": "SELECT T2.publisher_name FROM superhero AS T1 INNER JOIN publisher AS T2 ON T1.publisher_id = T2.id WHERE T1.superhero_name IN ('Hawkman', 'Karate Kid', 'Speedy')",
+        "Generated SQL": "SELECT publisher_name\nFROM superhero\nWHERE superhero_name IN ('Hawkman', 'Karate Kid', 'Speedy')"
+    },
+    {
+        "question_id": 1190,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT CAST(SUM(CASE WHEN UA <= 6.5 THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(ID) FROM Laboratory WHERE `U-PRO` > 0 AND `U-PRO` < 30",
+        "Generated SQL": "SELECT COUNT(*) FROM Patient\nWHERE UA < (SELECT AVG(UA) FROM Laboratory WHERE UA < 0)\n/ (SELECT COUNT(*) FROM Patient WHERE UA < 0)\n* 100"
+    },
+    {
+        "question_id": 850,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT DISTINCT T2.name FROM circuits AS T1 INNER JOIN races AS T2 ON T2.circuitID = T1.circuitId WHERE T1.country = 'Germany'",
+        "Generated SQL": "SELECT name FROM races\nINNER JOIN circuits ON races.circuitId = circuits.circuitId\nWHERE circuits.country = 'Germany'"
+    },
+    {
+        "question_id": 893,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT T3.forename, T3.surname, T2.points FROM races AS T1 INNER JOIN driverStandings AS T2 ON T2.raceId = T1.raceId INNER JOIN drivers AS T3 ON T3.driverId = T2.driverId WHERE T1.name = 'Chinese Grand Prix' AND T1.year = 2017 ORDER BY T2.points DESC LIMIT 3",
+        "Generated SQL": "SELECT\n  drivers.forename,\n  drivers.surname,\n  SUM(results.points)\nFROM\n  drivers\n  JOIN results ON drivers.driverId = results.driverId\nWHERE\n  results.raceId = (SELECT raceId FROM races WHERE name = 'Chinese Grand Prix 2017')\nGROUP BY\n  drivers.driverId\nORDER BY\n  SUM(results.points) DESC\nLIMIT 3"
+    },
+    {
+        "question_id": 1250,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT DISTINCT T1.ID FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T2.`U-PRO` > 0 AND T2.`U-PRO` < 30 AND T1.Diagnosis = 'SLE'",
+        "Generated SQL": "SELECT ID FROM Patient WHERE Diagnosis = 'SLE' AND UN = 'Normal'"
+    },
+    {
+        "question_id": 1148,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT CAST(COUNT(CASE WHEN t2.overall_rating > 70 THEN t1.id ELSE NULL END) AS REAL) * 100 / COUNT(t1.id) percent FROM Player AS t1 INNER JOIN Player_Attributes AS t2 ON t1.player_api_id = t2.player_api_id WHERE t1.height < 180",
+        "Generated SQL": "SELECT COUNT(*) FROM Player_Attributes\nWHERE height < 180 AND overall_rating > 70"
+    },
+    {
+        "question_id": 811,
+        "db_id": "superhero",
+        "Original SQL": "SELECT T4.alignment, T3.power_name FROM superhero AS T1 INNER JOIN hero_power AS T2 ON T1.id = T2.hero_id INNER JOIN superpower AS T3 ON T3.id = T2.power_id INNER JOIN alignment AS T4 ON T1.alignment_id = T4.id WHERE T1.superhero_name = 'Atom IV'",
+        "Generated SQL": "SELECT alignment.alignment, superpower.power_name\nFROM superhero\nINNER JOIN alignment ON superhero.alignment_id = alignment.id\nINNER JOIN hero_power ON superhero.id = hero_power.hero_id\nINNER JOIN superpower ON hero_power.power_id = superpower.id\nWHERE superhero.superhero_name = 'Atom IV'"
+    },
+    {
+        "question_id": 932,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT DISTINCT T1.year FROM races AS T1 INNER JOIN results AS T2 ON T2.raceId = T1.raceId INNER JOIN drivers AS T3 ON T3.driverId = T2.driverId WHERE T3.forename = 'Lewis' AND T3.surname = 'Hamilton'",
+        "Generated SQL": "SELECT year FROM seasons WHERE year IN (\n  SELECT year FROM races WHERE driverId IN (\n    SELECT driverId FROM drivers WHERE surname = 'Hamilton'\n  )\n)"
+    },
+    {
+        "question_id": 241,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT COUNT(T.molecule_id) FROM molecule AS T WHERE T.label = '-'",
+        "Generated SQL": "SELECT COUNT(*) FROM molecule\nWHERE molecule_id NOT IN (\n  SELECT molecule_id FROM molecule\n  JOIN connected ON molecule.molecule_id = connected.molecule_id\n  JOIN bond ON connected.bond_id = bond.bond_id\n  WHERE bond.bond_type = 'carcinogenic'\n)"
+    },
+    {
+        "question_id": 392,
+        "db_id": "card_games",
+        "Original SQL": "SELECT DISTINCT T1.name FROM cards AS T1 INNER JOIN rulings AS T2 ON T1.uuid = T2.uuid WHERE T1.rarity = 'uncommon' ORDER BY T2.date ASC LIMIT 3",
+        "Generated SQL": "SELECT name FROM cards WHERE rarity = 'Uncommon' ORDER BY date ASC"
+    },
+    {
+        "question_id": 779,
+        "db_id": "superhero",
+        "Original SQL": "SELECT COUNT(T1.power_id) FROM hero_power AS T1 INNER JOIN superhero AS T2 ON T1.hero_id = T2.id WHERE T2.superhero_name = 'Amazo'",
+        "Generated SQL": "SELECT COUNT(*) FROM hero_power\nWHERE hero_id = (SELECT id FROM superhero WHERE superhero_name = 'Amazo')"
+    },
+    {
+        "question_id": 868,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT DISTINCT T1.lat, T1.lng FROM circuits AS T1 INNER JOIN races AS T2 ON T2.circuitID = T1.circuitId WHERE T2.name = 'Malaysian Grand Prix'",
+        "Generated SQL": "SELECT lat, lng FROM circuits WHERE name = 'Malaysian Grand Prix'"
+    },
+    {
+        "question_id": 86,
+        "db_id": "california_schools",
+        "Original SQL": "SELECT AdmLName1, District, County, School FROM schools WHERE CharterNum = '0040'",
+        "Generated SQL": "SELECT s.District, s.County, s.School\nFROM schools s\nWHERE s.CharterNum = 40"
+    },
+    {
+        "question_id": 461,
+        "db_id": "card_games",
+        "Original SQL": "SELECT name FROM cards WHERE frameVersion = 2003 ORDER BY convertedManaCost DESC LIMIT 3",
+        "Generated SQL": "SELECT name FROM cards WHERE convertedManaCost = (SELECT MAX(convertedManaCost) FROM cards WHERE frameVersion = '2003') LIMIT 3"
+    },
+    {
+        "question_id": 128,
+        "db_id": "financial",
+        "Original SQL": "SELECT T2.A2, COUNT(T1.client_id) FROM client AS T1 INNER JOIN district AS T2 ON T1.district_id = T2.district_id WHERE T1.gender = 'F' GROUP BY T2.district_id, T2.A2 ORDER BY COUNT(T1.client_id) DESC LIMIT 9",
+        "Generated SQL": "SELECT A2, COUNT(*)\nFROM district\nJOIN client ON district.district_id = client.district_id\nWHERE gender = 'F'\nGROUP BY A2\nORDER BY COUNT(*) DESC\nLIMIT 9"
+    },
+    {
+        "question_id": 368,
+        "db_id": "card_games",
+        "Original SQL": "SELECT CAST(SUM(CASE WHEN borderColor = 'borderless' THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(id) FROM cards",
+        "Generated SQL": "SELECT\n  COUNT(*) AS total,\n  COUNT(CASE WHEN borderColor = 'Borderless' THEN 1 END) AS borderless\nFROM cards"
+    },
+    {
+        "question_id": 1496,
+        "db_id": "debit_card_specializing",
+        "Original SQL": "SELECT T1.Segment FROM customers AS T1 INNER JOIN yearmonth AS T2 ON T1.CustomerID = T2.CustomerID WHERE T2.Date = '201309' GROUP BY T1.CustomerID ORDER BY SUM(T2.Consumption) ASC LIMIT 1",
+        "Generated SQL": "SELECT Segment\nFROM customers\nWHERE CustomerID IN (\n  SELECT CustomerID\n  FROM transactions_1k\n  WHERE Date BETWEEN '2013-09-01' AND '2013-09-30'\n  GROUP BY CustomerID\n  ORDER BY SUM(Amount) ASC\n  LIMIT 1\n)"
+    },
+    {
+        "question_id": 873,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT T2.time FROM drivers AS T1 INNER JOIN results AS T2 ON T2.driverId = T1.driverId WHERE T2.raceId = 743 AND T1.forename = 'Bruce' AND T1.surname = 'McLaren'",
+        "Generated SQL": "SELECT time FROM results WHERE driverId = (SELECT driverId FROM drivers WHERE surname = 'McLaren') AND raceId = 743"
+    },
+    {
+        "question_id": 1113,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT t2.chanceCreationShootingClass FROM Team AS t1 INNER JOIN Team_Attributes AS t2 ON t1.team_api_id = t2.team_api_id WHERE t1.team_long_name = 'Hannover 96' AND t2.`date` LIKE '2015-09-10%'",
+        "Generated SQL": "SELECT team_short_name, defenceAggressionClass\nFROM Team\nWHERE team_short_name = \"Hannover 96\"\nAND date = \"2015-09-10\""
+    },
+    {
+        "question_id": 1514,
+        "db_id": "debit_card_specializing",
+        "Original SQL": "SELECT DISTINCT T3.Currency FROM transactions_1k AS T1 INNER JOIN gasstations AS T2 ON T1.GasStationID = T2.GasStationID INNER JOIN customers AS T3 ON T1.CustomerID = T3.CustomerID WHERE T1.Date = '2012-08-24' AND T1.Time = '16:25:00'",
+        "Generated SQL": "SELECT DISTINCT Currency\nFROM customers\nWHERE CustomerID IN (\n  SELECT CustomerID\n  FROM transactions_1k\n  WHERE Time = '16:25:00'\n  AND Date = '2012/8/24'\n)"
+    },
+    {
+        "question_id": 1004,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT SUM(T1.wins),T2.forename, T2.surname FROM driverStandings AS T1 INNER JOIN drivers AS T2 on T1.driverId = T2.driverId ORDER BY T2.dob ASC LIMIT 1",
+        "Generated SQL": "SELECT surname, forename, wins\nFROM drivers\nJOIN driverStandings ON driverStandings.driverId = drivers.driverId\nJOIN races ON driverStandings.raceId = races.raceId\nJOIN seasons ON races.year = seasons.year\nGROUP BY driverId\nORDER BY wins ASC, surname ASC, forename ASC\nLIMIT 1"
+    },
+    {
+        "question_id": 689,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT T2.DisplayName, T2.Location FROM posts AS T1 INNER JOIN users AS T2 ON T1.OwnerUserId = T2.Id WHERE T1.Id = 183 ORDER BY T1.LastEditDate DESC LIMIT 1",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 1014,
+        "db_id": "formula_1",
+        "Original SQL": "WITH fastest_lap_times AS (SELECT T1.raceId, T1.FastestLapTime, (CAST(SUBSTR(T1.FastestLapTime, 1, INSTR(T1.FastestLapTime, ':') - 1) AS REAL) * 60) + (CAST(SUBSTR(T1.FastestLapTime, INSTR(T1.FastestLapTime, ':') + 1, INSTR(T1.FastestLapTime, '.') - INSTR(T1.FastestLapTime, ':') - 1) AS REAL)) + (CAST(SUBSTR(T1.FastestLapTime, INSTR(T1.FastestLapTime, '.') + 1) AS REAL) / 1000) as time_in_seconds FROM results AS T1 WHERE T1.FastestLapTime IS NOT NULL ) SELECT T1.FastestLapTime as lap_record FROM results AS T1 INNER JOIN races AS T2 on T1.raceId = T2.raceId INNER JOIN circuits AS T3 on T2.circuitId = T3.circuitId INNER JOIN (SELECT MIN(fastest_lap_times.time_in_seconds) as min_time_in_seconds FROM fastest_lap_times INNER JOIN races AS T2 on fastest_lap_times.raceId = T2.raceId INNER JOIN circuits AS T3 on T2.circuitId = T3.circuitId WHERE T3.country = 'Italy' ) AS T4 ON (CAST(SUBSTR(T1.FastestLapTime, 1, INSTR(T1.FastestLapTime, ':') - 1) AS REAL) * 60) + (CAST(SUBSTR(T1.FastestLapTime, INSTR(T1.FastestLapTime, ':') + 1, INSTR(T1.FastestLapTime, '.') - INSTR(T1.FastestLapTime, ':') - 1) AS REAL)) + (CAST(SUBSTR(T1.FastestLapTime, INSTR(T1.FastestLapTime, '.') + 1) AS REAL) / 1000) = T4.min_time_in_seconds LIMIT 1",
+        "Generated SQL": "SELECT * FROM lapTimes\nWHERE circuitId IN (SELECT circuitId FROM circuits WHERE country = 'Italy')"
+    },
+    {
+        "question_id": 1010,
+        "db_id": "formula_1",
+        "Original SQL": "SELECT T1.time FROM lapTimes AS T1 INNER JOIN drivers AS T2 on T1.driverId = T2.driverId WHERE T2.forename = 'Lewis' AND T2.surname = 'Hamilton'",
+        "Generated SQL": "SELECT * FROM lapTimes\nWHERE driverId = (SELECT driverId FROM drivers WHERE surname = 'Hamilton')"
+    },
+    {
+        "question_id": 1309,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT T2.PLT FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T1.Diagnosis = 'MCTD' AND T2.PLT BETWEEN 100 AND 400",
+        "Generated SQL": "SELECT * FROM Patient\nWHERE Diagnosis = 'MCTD' AND PLT BETWEEN 200 AND 300"
+    },
+    {
+        "question_id": 362,
+        "db_id": "card_games",
+        "Original SQL": "SELECT T2.text FROM cards AS T1 INNER JOIN rulings AS T2 ON T1.uuid = T2.uuid WHERE T1.name = 'Condemn'",
+        "Generated SQL": "SELECT * FROM rulings WHERE uuid = \"c8a9e9e0-f9e2-4a8c-a9e0-f9e2a8c9e9e0\""
+    },
+    {
+        "question_id": 1237,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT DISTINCT T1.ID, T1.SEX FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T2.HGB < 10 AND T1.Admission = '-'",
+        "Generated SQL": null
+    },
+    {
+        "question_id": 1103,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT t2.overall_rating FROM Player AS t1 INNER JOIN Player_Attributes AS t2 ON t1.player_api_id = t2.player_api_id WHERE SUBSTR(t2.`date`, 1, 10) = '2016-02-04' AND t1.player_name = 'Aaron Mooy'",
+        "Generated SQL": "SELECT Player_Attributes.overall_rating\nFROM Player_Attributes\nINNER JOIN Player\nON Player_Attributes.player_api_id = Player.player_api_id\nWHERE Player.player_name = 'Aaron Mooy' AND Player_Attributes.date = '2016/2/4'"
+    },
+    {
+        "question_id": 316,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT DISTINCT T1.molecule_id FROM atom AS T1 INNER JOIN molecule AS T2 ON T1.molecule_id = T2.molecule_id WHERE T1.element = 'c' AND T2.label = '-'",
+        "Generated SQL": "SELECT label\nFROM molecule\nWHERE molecule_id IN (\n  SELECT molecule_id\n  FROM atom\n  WHERE element = 'c'\n  EXCEPT\n  SELECT molecule_id\n  FROM atom\n  WHERE element = 'c'\n  INTERSECT\n  SELECT molecule_id\n  FROM connected\n  WHERE bond_type = 'aromatic'\n)"
+    },
+    {
+        "question_id": 1395,
+        "db_id": "student_club",
+        "Original SQL": "SELECT COUNT(T2.link_to_member) FROM event AS T1 INNER JOIN attendance AS T2 ON T1.event_id = T2.link_to_event WHERE T1.event_name = 'Community Theater' AND SUBSTR(T1.event_date, 1, 4) = '2019'",
+        "Generated SQL": "SELECT COUNT(*) FROM member\nINNER JOIN attendance ON member.member_id = attendance.link_to_member\nINNER JOIN event ON attendance.link_to_event = event.event_id\nWHERE event.event_name = 'Community Theater' AND event.event_date = '2019-01-01'"
+    },
+    {
+        "question_id": 500,
+        "db_id": "card_games",
+        "Original SQL": "SELECT T2.translation FROM cards AS T1 INNER JOIN set_translations AS T2 ON T2.setCode = T1.setCode WHERE T1.name = 'Fellwar Stone' AND T2.language = 'Japanese' AND T2.translation IS NOT NULL",
+        "Generated SQL": "SELECT setCode FROM cards WHERE name = \"Fellwar Stone\""
+    },
+    {
+        "question_id": 1383,
+        "db_id": "student_club",
+        "Original SQL": "SELECT T1.first_name, T1.last_name FROM member AS T1 INNER JOIN zip_code AS T2 ON T1.zip = T2.zip_code WHERE T2.city = 'Georgetown' AND T2.state = 'South Carolina'",
+        "Generated SQL": "SELECT first_name, last_name\nFROM member\nWHERE zip = 39042"
+    },
+    {
+        "question_id": 805,
+        "db_id": "superhero",
+        "Original SQL": "SELECT DISTINCT full_name FROM superhero WHERE full_name IS NOT NULL AND (weight_kg IS NULL OR weight_kg = 0)",
+        "Generated SQL": "SELECT superhero.full_name\nFROM superhero\nWHERE superhero.weight_kg IS NULL"
+    },
+    {
+        "question_id": 722,
+        "db_id": "superhero",
+        "Original SQL": "SELECT T2.colour FROM superhero AS T1 INNER JOIN colour AS T2 ON T1.skin_colour_id = T2.id WHERE T1.superhero_name = 'Apocalypse'",
+        "Generated SQL": "SELECT DISTINCT colour.colour\nFROM superhero\nINNER JOIN colour ON superhero.skin_colour_id = colour.id\nWHERE superhero.superhero_name = 'Apocalypse'"
+    },
+    {
+        "question_id": 1489,
+        "db_id": "debit_card_specializing",
+        "Original SQL": "SELECT SUM(T2.Consumption) FROM customers AS T1 INNER JOIN yearmonth AS T2 ON T1.CustomerID = T2.CustomerID WHERE T2.Date = '201305' AND T1.Segment = 'KAM'",
+        "Generated SQL": "SELECT SUM(Consumption)\nFROM yearmonth\nWHERE Date BETWEEN '2013-05-01' AND '2013-05-31'"
+    },
+    {
+        "question_id": 293,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT COUNT(T1.atom_id) FROM atom AS T1 INNER JOIN molecule AS T2 ON T1.molecule_id = T2.molecule_id WHERE T2.label = '+'",
+        "Generated SQL": "SELECT COUNT(*) FROM atom\nWHERE molecule_id IN (\n  SELECT molecule_id FROM molecule\n  WHERE label = 'carcinogenic compounds'\n)"
+    },
+    {
+        "question_id": 284,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT DISTINCT T2.bond_type FROM atom AS T1 INNER JOIN bond AS T2 ON T1.molecule_id = T2.molecule_id WHERE T1.element = 'c'",
+        "Generated SQL": "SELECT bond_type\nFROM bond\nWHERE bond_id IN (\n    SELECT bond_id\n    FROM connected\n    WHERE atom_id IN (\n        SELECT atom_id\n        FROM atom\n        WHERE element = 'Carbon'\n    )\n)"
+    },
+    {
+        "question_id": 391,
+        "db_id": "card_games",
+        "Original SQL": "SELECT DISTINCT T1.name FROM cards AS T1 INNER JOIN foreign_data AS T2 ON T1.uuid = T2.uuid WHERE T1.originalType = 'Artifact' AND T1.colors = 'B'",
+        "Generated SQL": "SELECT cards.name, foreign_data.name, foreign_data.language\nFROM cards\nJOIN foreign_data ON foreign_data.uuid = cards.uuid\nWHERE cards.type = 'Artifact'\nAND cards.colors = 'B'\nAND foreign_data.language = 'French'"
+    },
+    {
+        "question_id": 440,
+        "db_id": "card_games",
+        "Original SQL": "SELECT DISTINCT language FROM foreign_data WHERE name = 'A Pedra Fellwar'",
+        "Generated SQL": "SELECT * FROM set_translations WHERE setCode = 'A PEDRA FELWAR' AND language = 'pt'"
+    },
+    {
+        "question_id": 1341,
+        "db_id": "student_club",
+        "Original SQL": "SELECT location FROM event WHERE event_name = 'Spring Budget Review'",
+        "Generated SQL": "SELECT location FROM event WHERE event_name = \"Spring Budget Review\""
+    },
+    {
+        "question_id": 1131,
+        "db_id": "european_football_2",
+        "Original SQL": "SELECT CAST(SUM(T1.height) AS REAL) / COUNT(T1.id) FROM Player AS T1 INNER JOIN Match AS T2 ON T1.id = T2.id INNER JOIN Country AS T3 ON T2.country_id = T3.ID WHERE T3.NAME = 'Italy'",
+        "Generated SQL": "SELECT AVG(height) FROM Player WHERE country_id = (SELECT id FROM Country WHERE name = 'Italy')"
+    },
+    {
+        "question_id": 1151,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT CAST(SUM(CASE WHEN Admission = '+' THEN 1 ELSE 0 END) AS REAL) * 100 / COUNT(*) FROM Patient WHERE STRFTIME('%Y', Birthday) BETWEEN '1930' AND '1940'",
+        "Generated SQL": "SELECT COUNT(*) FROM Patient WHERE Patient.Birthday BETWEEN 1930 AND 1940 AND Patient.Admission = 'Inpatient'"
+    },
+    {
+        "question_id": 641,
+        "db_id": "codebase_community",
+        "Original SQL": "SELECT COUNT(Id) FROM badges WHERE Name = 'Commentator' AND STRFTIME('%Y', Date) = '2014'",
+        "Generated SQL": "SELECT COUNT(DISTINCT UserId)\nFROM badges\nWHERE Name = 'Commentator'\n  AND Date BETWEEN '2014-01-01' AND '2014-12-31'"
+    },
+    {
+        "question_id": 1180,
+        "db_id": "thrombosis_prediction",
+        "Original SQL": "SELECT T1.SEX FROM Patient AS T1 INNER JOIN Laboratory AS T2 ON T1.ID = T2.ID WHERE T2.GPT = 9.0 AND T2.Date = '1992-06-12'",
+        "Generated SQL": "SELECT * FROM Patient\nWHERE SEX = 'M' AND ALT = 9 AND Date = '1992-6-12'"
+    },
+    {
+        "question_id": 266,
+        "db_id": "toxicology",
+        "Original SQL": "SELECT COUNT(T.molecule_id) FROM molecule AS T WHERE T.molecule_id BETWEEN 'TR000' AND 'TR030' AND T.label = '+'",
+        "Generated SQL": "SELECT SUM(carcinogenic)\nFROM molecule\nWHERE molecule_id BETWEEN 'TR000' AND 'TR030'"
+    }
+]
