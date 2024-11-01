@@ -8,4 +8,4 @@ with open(dataset_path, 'r') as json_file:
     for entry in data:
         if entry["Generated SQL"] == None:
             counter += 1
-    print(f"'None' in generated sql:{counter}")
+    print(f"'None' in generated sql: {counter}")

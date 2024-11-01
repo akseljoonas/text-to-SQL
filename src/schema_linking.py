@@ -3,8 +3,8 @@ import json
 
 from utils.schema_linking_utils import generate_schema_for_instance
 
-
-BASE_DABATASES_DIR =  "databases/dev_databases/"
+# The database directory needs to be downloaded manually and added to the repository
+BASE_DABATASES_DIR =  "databases/dev_databases/" 
 
 dataset = "data/raw/MINIDEV/mini_dev_sqlite.json"
 output_file_path = "data/processed/MINIDEV/mini_dev_dataset.json"

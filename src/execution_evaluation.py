@@ -1,14 +1,10 @@
 from utils.execution_utils import create_sql_queries, compare_retrievals
 
-# Paths to files 
-#DELETED IDs:
-# lora, finetuned: 518, 701
-# base modeL: 584 (for generated), 701, 345
-dataset_path = "data/generations/full_finetuned_generations_cleaned.json"
+DATABASE_DIR = "databases/dev_databases/"
 
-DATABASE_DIR = "databases/dev_databases/"  # Direct5ory where your database subfolders are stored
+# path to the json file containing the generated and true sql queries
+dataset_path = "data/generations/full_finetuned_generations.json"
 
-# Number of items to process (set to None to process all items, or an integer to limit)
 test_limit = None  # Set this to None to process all items, or any integer to limit to first N items
 
 original_retrievals, test_retrievals = create_sql_queries(dataset_path=dataset_path,
