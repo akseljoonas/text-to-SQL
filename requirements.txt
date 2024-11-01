@@ -9,3 +9,4 @@ deepspeed
 oracledb
 numpy
 pandas
+flash-attn
