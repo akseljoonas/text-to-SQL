@@ -24,4 +24,4 @@ Install dependencies from `requirements.txt`:
 pip install -r requirements.txt
 ```
 ## Contributions
-Aksel Joonas Reedi, Mika Ernesto Umana Lemus, Mihkel Mariusz Jezierski
+Aksel Joonas Reedi (akseljoonas), Mika Ernesto Umana Lemus (MikaMann), Mihkel Mariusz Jezierski (mikhelmj)
