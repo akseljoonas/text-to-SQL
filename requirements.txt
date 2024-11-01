@@ -6,3 +6,6 @@ torch
 ipywidgets
 accelerate>=0.26.0
 deepspeed
+oracledb
+numpy
+pandas
