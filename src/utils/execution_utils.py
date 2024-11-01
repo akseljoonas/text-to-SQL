@@ -1,6 +1,7 @@
-import sqlite3
 import json
 import os
+import sqlite3
+
 
 def create_sql_queries(dataset_path:str = None, database_path:str = None, test_limit:int = None) -> tuple:
     # Read the JSON file containing the SQL queries
@@ -14,6 +15,7 @@ def create_sql_queries(dataset_path:str = None, database_path:str = None, test_l
     # Initialize an empty list to store the query results
     original_query_results = []
     generated_query_results = []
+    successful_retrievals = 0
     # Loop through each item in the data
     for idx, item in enumerate(data):
         db_id = item['db_id']  # Get the database ID (db folder name)
@@ -43,7 +45,6 @@ def create_sql_queries(dataset_path:str = None, database_path:str = None, test_l
                 # Flatten the result to a single list (flat array)
                 original_query_result = [item for row in original_rows for item in row]  # Flatten the list of tuples
                 print(f"Original Query executed successfully for question {question_id}.")
-
                 # Append the flat result to the list of all results
                 original_query_results.append([original_query_result])
 
@@ -58,7 +59,7 @@ def create_sql_queries(dataset_path:str = None, database_path:str = None, test_l
                 # Flatten the result to a single list (flat array)
                 generated_query_result = [item for row in generated_rows for item in row]  # Flatten the list of tuples
                 print(f"Generated Query executed successfully for question {question_id}.")
-
+                successful_retrievals += 1
                 # Append the flat result to the list of all results
                 generated_query_results.append([generated_query_result])
 
@@ -71,6 +72,7 @@ def create_sql_queries(dataset_path:str = None, database_path:str = None, test_l
                 # Close the database connection
                 conn.close()
 
+    print(f"Successful retrievals: {successful_retrievals}/500")
     return original_query_results, generated_query_results
 
 # Function to compare two arrays entry by entry

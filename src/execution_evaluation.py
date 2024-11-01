@@ -4,9 +4,9 @@ from utils.execution_utils import create_sql_queries, compare_retrievals
 #DELETED IDs:
 # lora, finetuned: 518, 701
 # base modeL: 584 (for generated), 701, 345
-dataset_path = "data/generations/base_model_generations_cleaned.json"
+dataset_path = "data/generations/full_finetuned_generations_cleaned.json"
 
-DATABASE_DIR = "databases/dev_databases/"  # Directory where your database subfolders are stored
+DATABASE_DIR = "databases/dev_databases/"  # Direct5ory where your database subfolders are stored
 
 # Number of items to process (set to None to process all items, or an integer to limit)
 test_limit = None  # Set this to None to process all items, or any integer to limit to first N items
