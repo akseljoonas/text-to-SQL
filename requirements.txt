@@ -10,3 +10,4 @@ oracledb
 numpy
 pandas
 flash-attn
+pyarrow 
