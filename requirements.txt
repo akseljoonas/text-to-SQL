@@ -1,6 +1,6 @@
 sqlglot[rs]
 ipykernel
-transformers
+transformers==4.45.0 
 datasets
 torch==2.4.0
 ipywidgets
@@ -12,3 +12,4 @@ pandas
 flash-attn
 pyarrow 
 accelerate
+peft
